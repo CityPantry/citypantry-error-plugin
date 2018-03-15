@@ -6,6 +6,7 @@
   "time": "right fucking now bitches!!!!",
   "stepsToReproduce": "1.2.3.4",
   "currentUser": "lewis",
-  "isMasquerading": true,
-  "consoleBlob": "foo() blew up like really bad bro"
+  "isMasquerading": "true",
+  "consoleErrors": "foo() blew up like really bad bro",
+  "urgency": "HIGH"
 }
