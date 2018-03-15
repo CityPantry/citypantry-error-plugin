@@ -1,3 +1,5 @@
+import { Urgency } from './urgency.enum';
+
 export interface Report {
   name: string;
   description: string;
@@ -10,4 +12,5 @@ export interface Report {
   currentUser: string;
   isMasquerading: boolean;
   consoleErrors: string;
+  urgency: Urgency;
 }
