@@ -63,7 +63,7 @@ class BackgroundHandler {
 
     const { url, windowId, id: tabId } = await this.fetchCurrentTab();
     const screenshot = await this.takeScreenshot(windowId);
-    const time = new Date().toISOString();
+    const time = this.getTime();
     const reduxData = await this.getReduxState(tabId as number);
 
     this.updateState({
@@ -89,6 +89,13 @@ class BackgroundHandler {
       snapshot: null,
       isLoadingSnapshot: false
     });
+  }
+
+  private getTime(): string {
+    const now = new Date();
+    const pad = x => x < 10 ? '0' + x : '' + x;
+
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   }
 
   private fetchCurrentTab(): Promise<Tab> {
