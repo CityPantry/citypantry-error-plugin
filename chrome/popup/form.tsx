@@ -28,7 +28,7 @@ export class Form extends React.Component<FormProps, FormState> {
         stepsToReproduce: '',
         currentUser: '',
         isMasquerading: false,
-        consoleErrors: '',
+        consoleErrors: props.snapshot.debugData || '',
         screenshot: props.snapshot.screenshot,
         urgency: Urgency.LOW
       }

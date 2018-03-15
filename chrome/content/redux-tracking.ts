@@ -13,7 +13,6 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
   return {
     push: (event: DebugEvent): void => {
       events = events.slice(-40).concat(event);
-      console.log(event);
     },
     slice: (): DebugEvent[] => {
       const types = events.map(event => event.type);
@@ -62,10 +61,36 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
   // Re-inject ourselves so we can do it properly.
   if (!document.getElementById('cp-bug-content-script')) {
     injectScript( chrome.extension.getURL('/js/content.js'), 'body');
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request === 'get-redux-state-slice') {
+        window.document.dispatchEvent(new CustomEvent('get-redux-state-slice'));
+        const area = window.document.getElementById('__cp-redux-state-slice') as HTMLTextAreaElement;
+        const value = area && area.value || '';
+        window.document.dispatchEvent(new CustomEvent('cleanup-redux-state-slice'));
+        sendResponse(value);
+      }
+    });
   } else {
     const currentState: DebugEvent[] = Array.prototype.slice.call(window.__cp_bug_events__ || []);
 
-    window.__cp_bug_events__ = createDebugEventManager(currentState) as any; // TODO type
+    const manager = createDebugEventManager(currentState);
+    window.__cp_bug_events__ = manager;
+
+    window.document.addEventListener('get-redux-state-slice', () => {
+      const area = document.createElement('textarea');
+      area.style.display = 'none';
+      area.id = '__cp-redux-state-slice';
+      area.value = JSON.stringify(manager.slice());
+      document.body.appendChild(area);
+    });
+    window.document.addEventListener('cleanup-redux-state-slice', () => {
+      const area = document.getElementById('__cp-redux-state-slice') as HTMLTextAreaElement;
+      if (area) {
+        area.parentElement && area.parentElement.removeChild(area);
+      }
+    });
+
     console.info('Loaded Debug Event Manager!');
   }
 
