@@ -19,3 +19,7 @@ functions:
       - http:
           method: post
           path: hello
+
+custom:
+  webpack:
+    mode: development

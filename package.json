@@ -23,7 +23,7 @@
     "@types/chrome": "^0.0.60",
     "concurrently": "^3.5.1",
     "serverless": "^1.26.1",
-    "serverless-webpack": "^3.0.0",
+    "serverless-webpack": "^5.1.0",
     "ts-loader": "4",
     "typescript": "^2.5.2",
     "webpack": "^4.1.1",
