@@ -1,7 +1,7 @@
 import { Background } from '../shared/background.interface';
 import { State } from '../shared/state.interface';
 import axios from 'axios';
-import { getAuthToken, withAuthToken } from './auth';
+import { withAuthToken } from './auth';
 
 const _export: {
   background: Background
@@ -14,7 +14,10 @@ class BackgroundHandler {
   constructor() {
     this.state = {
       email: null,
-      name: null
+      name: null,
+      url: null,
+      isLoading: true,
+      time: null,
     };
   }
 
@@ -30,7 +33,7 @@ class BackgroundHandler {
     };
   }
 
-  public async getLoggedInUserDetails(force?: boolean): Promise<{ email: string, name: string }> {
+  public async getInitialState(force?: boolean): Promise<{ email: string, name: string }> {
     const apiResponse = await withAuthToken((token) =>
       axios.get('https://www.googleapis.com/oauth2/v2/userinfo?key=AIzaSyAvrSAsf1qwfysLEAxp_jVRSWlQ2nlAAps', {
         headers: {
@@ -46,10 +49,30 @@ class BackgroundHandler {
     this.updateState({
       ...this.state,
       email,
-      name
+      name,
+      isLoading: false,
     });
 
     return { email, name };
+  }
+
+  public async takeSnapshot(): Promise<void> {
+    const url = await this.fetchCurrentUrl();
+    const time = new Date().toISOString();
+
+    this.updateState({
+      ...this.state,
+      url,
+      time,
+    });
+  }
+
+  private fetchCurrentUrl(): Promise<string> {
+    return new Promise((resolve) => {
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (result) => {
+        resolve(result[0].url);
+      });
+    });
   }
 
   private updateState(state: State): void {
@@ -65,5 +88,6 @@ const handler = new BackgroundHandler();
 
 _export.background = {
   subscribeToState: handler.subscribe.bind(handler),
-  getLoggedInUserDetails: handler.getLoggedInUserDetails.bind(handler)
+  getInitialState: handler.getInitialState.bind(handler),
+  takeSnapshot: handler.takeSnapshot.bind(handler),
 };

@@ -4,17 +4,10 @@ import { State } from '../shared/state.interface';
 import { PopupBody } from './popup-body';
 import { Report } from '../../models';
 import axios from 'axios';
-import  * as moment from 'moment';
-
-export interface PopupState {
-  isLoading: boolean;
-  name: string | null;
-  email: string | null;
-}
 
 const getBackground = (): Background => (chrome.extension.getBackgroundPage() as any).background;
 
-export class Popup extends React.Component<any, PopupState> implements React.ComponentLifecycle<any, any> {
+export class Popup extends React.Component<any, State> implements React.ComponentLifecycle<any, any> {
 
   private unsubscribe: () => void;
 
@@ -24,7 +17,9 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
     this.state = {
       isLoading: true,
       name: null,
-      email: null
+      email: null,
+      url: null,
+      time: null,
     };
     this.submitReport = this.submitReport.bind(this);
   }
@@ -36,10 +31,13 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
         ...oldState,
         isLoading: !state.name,
         email: state.email,
-        name: state.name
+        name: state.name,
+        time: state.time,
+        url: state.url
       }));
     });
-    background.getLoggedInUserDetails();
+    background.getInitialState();
+    background.takeSnapshot(); // TODO move to happen on event.
   }
 
   public componentWillUnmount(): void {
@@ -61,6 +59,8 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
       <PopupBody
         name={this.state.name}
         email={this.state.email}
+        url={this.state.url}
+        time={this.state.time}
         onSubmit={this.submitReport}
       />;
   }

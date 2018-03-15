@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "moment": "^2.21.0",
+    "pify": "^3.0.0",
     "preact": "^8.2.7",
     "serverless-api-handlers": "paullessing/serverless-api-handlers"
   },
