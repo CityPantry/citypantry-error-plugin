@@ -39,3 +39,7 @@ jspm_packages
 # Serverless directories
 .serverless
 .build
+
+# Things that absolutely should not be committed
+config/config.ts
+

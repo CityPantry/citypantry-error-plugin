@@ -246,14 +246,15 @@ export class Form extends React.Component<FormProps, FormState> {
           </label>
         </div>
         <div class="form-group">
-          <label class="form-group__label">
-            Are you masquerading?
+          <label class="toggle-input">
             <input
-              class="form-input"
+              class="toggle-input__input"
               type="checkbox"
               checked={this.state.form.isMasquerading}
               onChange={this.handleBoolChange('isMasquerading')}
             />
+              <span class="toggle-input__toggle"></span>
+              <span class="toggle-input__label">Are you masquerading?</span>
           </label>
         </div>
         <div class="form-group">
