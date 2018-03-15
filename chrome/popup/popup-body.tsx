@@ -1,10 +1,11 @@
 import * as React from 'preact';
 import { Report, Urgency } from '../../models';
-import moment = require('moment');
 
 export interface PopupBodyProps {
   name: string | null;
   email: string | null;
+  time: string | null;
+  url: string | null;
   onSubmit(report: Report): void;
 }
 
@@ -22,8 +23,8 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
         description: '',
         impact: '',
         affectedPeople: '',
-        url: '',
-        time: moment().format(),
+        url: props.url || '',
+        time: props.time || '',
         stepsToReproduce: '',
         //screenshot;
         currentUser: '',
@@ -61,7 +62,7 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
   }
 
   handleChoiceChange(prop: keyof Report, value: any) {
-    return () => this.setState(({ form })  => ({
+    return () => this.setState(({ form }) => ({
       form: {
         ...form,
         [prop]: value
@@ -81,19 +82,19 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
         <div>
           <label>
             Your Name:
-            <input type="text" value={this.state.form.name} onChange={this.handleStringChange('name')} />
+            <input type="text" value={this.state.form.name} onChange={this.handleStringChange('name')}/>
           </label>
         </div>
         <div>
           <label>
             What's Wrong?
-            <textarea type="text" value={this.state.form.description} onChange={this.handleStringChange('description')} />
+            <textarea type="text" value={this.state.form.description} onChange={this.handleStringChange('description')}/>
           </label>
         </div>
         <div>
           <label>
             Impact:
-            <input type="text" value={this.state.form.impact} onChange={this.handleStringChange('impact')} />
+            <input type="text" value={this.state.form.impact} onChange={this.handleStringChange('impact')}/>
           </label>
         </div>
         <div>
@@ -105,7 +106,7 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
         <div>
           <label>
             Who does this affect? (You, customers, )
-            <input type="text" value={this.state.form.affectedPeople} onChange={this.handleStringChange('affectedPeople')} />
+            <input type="text" value={this.state.form.affectedPeople} onChange={this.handleStringChange('affectedPeople')}/>
           </label>
         </div>
         <div>
@@ -150,37 +151,37 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
         <div>
           <label>
             URL:
-            <input type="text" value={this.state.form.url} onChange={this.handleStringChange('url')} />
+            <input type="text" value={this.state.form.url} onChange={this.handleStringChange('url')}/>
           </label>
         </div>
-        {/*<div> We may want to add this back in and allow editing time */}
-          {/*<label>*/}
-            {/*Time:*/}
-            {/*<input type="datetime" value={this.state.form.time} onChange={this.handleStringChange('time')} />*/}
-          {/*</label>*/}
-        {/*</div>*/}
+        <div>
+        <label>
+        Time:
+        <input type="datetime" value={this.state.form.time} onChange={this.handleStringChange('time')} />
+        </label>
+        </div>
         <div>
           <label>
             Steps to Reproduce: (Describe what exactly you did before this error occurred)
-            <textarea type="text" value={this.state.form.stepsToReproduce} onChange={this.handleStringChange('stepsToReproduce')} />
+            <textarea type="text" value={this.state.form.stepsToReproduce} onChange={this.handleStringChange('stepsToReproduce')}/>
           </label>
         </div>
         <div>
           <label>
             Current user:
-            <input type="text" value={this.state.form.currentUser} onChange={this.handleStringChange('currentUser')} />
+            <input type="text" value={this.state.form.currentUser} onChange={this.handleStringChange('currentUser')}/>
           </label>
         </div>
         <div>
           <label>
             Are you masquerading?
-            <input type="checkbox" checked={this.state.form.isMasquerading} onChange={this.handleBoolChange('isMasquerading')} />
+            <input type="checkbox" checked={this.state.form.isMasquerading} onChange={this.handleBoolChange('isMasquerading')}/>
           </label>
         </div>
         <div>
           <label>
             Console Errors:
-            <textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')} />
+            <textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')}/>
           </label>
         </div>
         <button type="submit">Go</button>
