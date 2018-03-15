@@ -144,7 +144,7 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
               checked={this.state.form.urgency === Urgency.IMMEDIATE}
               onChange={this.handleChoiceChange('urgency', Urgency.IMMEDIATE)}
             />
-            I can't do something that I need right now, or an order cannot be placed
+            I can't do something that I need right now
           </label>
         </div>
         <div>
