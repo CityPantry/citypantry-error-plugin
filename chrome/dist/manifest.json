@@ -29,7 +29,10 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "oauth2": {
     "client_id": "569754864639-m4qg4jo8gnnucbsa9nsomo49c9oqh5ii.apps.googleusercontent.com",
-    "scopes":["https://www.googleapis.com/oauth2/v2/userinfo"]
+    "scopes":[
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
   },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwr7VN9BFYLpK93RfNa5NZlaSPhba9yA9Vl4d4jqzaQ92vicWriYwmzm6gIdCz1AO1QDNiPsTbZsSDUY6sUJO/02D2ZpPvJFvTsfD/N5uu5MY7lUBylhxWqoOoP0TjGtKIrfEnUNcM2DESiJxogdm7Wdhjyy8r29wkiVU5lAVjW7Z8r0nLCMy5Ohtt2rJtlcx7Im9spVGkcB4YCfQbpQmpufWh2/xhlqZjUS72t/WDk8JjONYrXrBkd8eHyU7g3aFQ3kE0HbOYHvH6ILUBr/duIorIQxdkTUVfOdS7wQ3QwwR2RSBsAeMV2OL2HTg3TqwIKmkEMSSLsoQySCWv/VC+QIDAQAB"
 }

@@ -2,6 +2,8 @@ import * as React from 'preact';
 import { Report, Urgency } from '../../models';
 
 export interface PopupBodyProps {
+  name: string | null;
+  email: string | null;
   onSubmit(report: Report): void;
 }
 
@@ -15,7 +17,7 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
     super(props);
     this.state = {
       form: {
-        name: '',
+        name: props.name || '',
         description: '',
         impact: '',
         affectedPeople: '',

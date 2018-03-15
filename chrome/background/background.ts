@@ -1,7 +1,7 @@
 import { Background } from '../shared/background.interface';
 import { State } from '../shared/state.interface';
 import axios from 'axios';
-import { getAuthToken } from './auth';
+import { getAuthToken, withAuthToken } from './auth';
 
 const _export: {
   background: Background
@@ -13,7 +13,8 @@ class BackgroundHandler {
 
   constructor() {
     this.state = {
-      authToken: ''
+      email: null,
+      name: null
     };
   }
 
@@ -29,18 +30,34 @@ class BackgroundHandler {
     };
   }
 
-  public async getLoggedInUserName(): Promise<string> {
-    const token = await getAuthToken();
-
-    const apiResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo?key=AIzaSyAvrSAsf1qwfysLEAxp_jVRSWlQ2nlAAps', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    });
+  public async getLoggedInUserDetails(force?: boolean): Promise<{ email: string, name: string }> {
+    const apiResponse = await withAuthToken((token) =>
+      axios.get('https://www.googleapis.com/oauth2/v2/userinfo?key=AIzaSyAvrSAsf1qwfysLEAxp_jVRSWlQ2nlAAps', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      }));
 
     console.log(apiResponse);
 
-    return JSON.stringify(apiResponse.data);
+    const email: string = apiResponse.data.email;
+    const name: string = apiResponse.data.name;
+
+    this.updateState({
+      ...this.state,
+      email,
+      name
+    });
+
+    return { email, name };
+  }
+
+  private updateState(state: State): void {
+    this.state = state;
+    if (!this.subscriber) {
+      return;
+    }
+    this.subscriber(this.state);
   }
 }
 
@@ -48,5 +65,5 @@ const handler = new BackgroundHandler();
 
 _export.background = {
   subscribeToState: handler.subscribe.bind(handler),
-  getLoggedInUserName: handler.getLoggedInUserName.bind(handler)
+  getLoggedInUserDetails: handler.getLoggedInUserDetails.bind(handler)
 };

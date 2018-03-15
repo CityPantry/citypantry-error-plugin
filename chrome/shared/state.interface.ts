@@ -1,3 +1,4 @@
 export interface State {
-  authToken: string;
+  name: string | null;
+  email: string | null;
 }
