@@ -2971,8 +2971,8 @@ semver@~5.0.1:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.0.3.tgz#77466de589cd5d3c95f138aa78bc569a3cb5d27a"
 
 serverless-api-handlers@paullessing/serverless-api-handlers:
-  version "0.0.3"
-  resolved "https://codeload.github.com/paullessing/serverless-api-handlers/tar.gz/c4696cefb40ce9a556f64bb288be5ec5c25eee38"
+  version "0.0.4"
+  resolved "https://codeload.github.com/paullessing/serverless-api-handlers/tar.gz/f499754f2f263753c0f633e6e751a1280b8884f0"
   dependencies:
     "@types/aws-lambda" "^0.0.32"
     "@types/body-parser" "^1.16.8"
