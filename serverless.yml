@@ -5,12 +5,22 @@ service:
 plugins:
   - serverless-webpack
 
+custom:
+  webpack:
+    mode: development
+  bucket: citypantry-bug-screenshots
+
 provider:
   name: aws
   runtime: nodejs6.10
   region: eu-west-2
   memorySize: 256
   profile: citypantry
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
 
 functions:
   report:
@@ -19,7 +29,3 @@ functions:
       - http:
           method: post
           path: report
-
-custom:
-  webpack:
-    mode: development

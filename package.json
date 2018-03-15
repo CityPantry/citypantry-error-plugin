@@ -16,6 +16,7 @@
     "deploy": "sls deploy -f report"
   },
   "dependencies": {
+    "aws-sdk": "^2.209.0",
     "axios": "^0.18.0",
     "pify": "^3.0.0",
     "preact": "^8.2.7",

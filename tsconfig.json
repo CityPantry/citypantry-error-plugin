@@ -10,7 +10,8 @@
       "dom"
     ],
     "types": [
-      "chrome"
+      "chrome",
+      "node"
     ],
     "jsx": "react",
     "skipLibCheck": true,
