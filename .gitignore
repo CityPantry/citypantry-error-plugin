@@ -41,5 +41,5 @@ jspm_packages
 .build
 
 # Things that absolutely should not be committed
-backend/config/config.ts
+config/config.ts
 
