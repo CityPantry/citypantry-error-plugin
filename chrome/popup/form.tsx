@@ -85,57 +85,84 @@ export class Form extends React.Component<FormProps, FormState> {
         style="padding: 8px;"
         onSubmit={this.handleSubmit}
       >
+        <h2>Submit a Bug Report</h2>
+        <div class="form-group">
+          Your Name: {this.state.form.name}
+        </div>
         <div class="form-group">
           <label class="form-group__label">
-            Your Name:
-            <input
-              class="form-input"
-              type="text"
-              value={this.state.form.name}
-              onChange={this.handleStringChange('name')}/>
+            URL
           </label>
+          <input
+            class="form-input"
+            type="text"
+            value={this.state.form.url}
+            onChange={this.handleStringChange('url')}
+          />
+          <p style={{fontSize: '1rem'}} class="mt-small mb-large">Not the right page?
+            <button
+              class="button-link ml-small"
+              type="button"
+              onClick={this.props.onReset}
+            >
+              Create a new report
+            </button>
+          </p>
         </div>
+
         <div class="form-group">
           <label class="form-group__label">
             What's Wrong?
-            <textarea
-              class="form-input"
-              type="text"
-              value={this.state.form.description}
-              onChange={this.handleStringChange('description')}
-            />
           </label>
+          <p class="form-group__sub-label">
+            Write a short summary of what should happen vs. what actually happens.
+          </p>
+          <textarea
+            class="form-input"
+            type="text"
+            value={this.state.form.description}
+            onChange={this.handleStringChange('description')}
+            placeholder="I'm trying to check out a cart for tomorrow. When I click the checkout button it should take me to the next page but nothing happens."
+            rows={4}
+          />
         </div>
         <div class="form-group">
           <label class="form-group__label">
-            Impact:
-            <input
-              class="form-input"
-              type="text"
-              value={this.state.form.impact}
-              onChange={this.handleStringChange('impact')}/>
+            Impact
           </label>
+          <p class="form-group__sub-label">
+            What impact is the bug having on you?
+          </p>
+          <input
+            class="form-input"
+            type="text"
+            value={this.state.form.impact}
+            onChange={this.handleStringChange('impact')}
+            placeholder="I can't check out this cart."
+          />
         </div>
-        {/* TODO add console errors */}
-        {/*<div class="form-group">*/}
-        {/*<label class="form-group__label">*/}
-        {/*Console Errors: */}
-        {/*<textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')} />*/}
-        {/*</label>*/}
-        {/*</div>*/}
         <div class="form-group">
           <label class="form-group__label">
-            Who does this affect? (You, customers, everyone...)
-            <input
-              class="form-input"
-              type="text"
-              value={this.state.form.affectedPeople}
-              onChange={this.handleStringChange('affectedPeople')}
-            />
+            Affected People
           </label>
+          <p class="form-group__sub-label">
+            Who is affected by this bug?
+          </p>
+          <input
+            class="form-input"
+            type="text"
+            value={this.state.form.affectedPeople}
+            onChange={this.handleStringChange('affectedPeople')}
+            placeholder="Customers and account managers"
+          />
         </div>
         <div class="form-group">
-          Urgency:
+          <label class="form-group__label">
+            Urgency
+          </label>
+          <p class="form-group__sub-label">
+            How badly is this affecting your work?
+          </p>
           <label class="form-choice">
             <input
               class="form-choice__input"
@@ -179,36 +206,33 @@ export class Form extends React.Component<FormProps, FormState> {
         </div>
         <div class="form-group">
           <label class="form-group__label">
-            URL:
-            <input
-              class="form-input"
-              type="text"
-              value={this.state.form.url}
-              onChange={this.handleStringChange('url')}
-            />
+            Time
           </label>
+          <p class="form-group__sub-label">
+            When did this occur?
+          </p>
+          <input
+            class="form-input"
+            type="datetime-local"
+            value={this.state.form.time}
+            onChange={this.handleStringChange('time')}
+          />
         </div>
         <div class="form-group">
           <label class="form-group__label">
-            Time:
-            <input
-              class="form-input"
-              type="datetime"
-              value={this.state.form.time}
-              onChange={this.handleStringChange('time')}
-            />
+            Steps to Reproduce
           </label>
-        </div>
-        <div class="form-group">
-          <label class="form-group__label">
-            Steps to Reproduce: (Describe what exactly you did before this error occurred)
-            <textarea
-              class="form-input"
-              type="text"
-              value={this.state.form.stepsToReproduce}
-              onChange={this.handleStringChange('stepsToReproduce')}
-            />
-          </label>
+          <p class="form-group__sub-label">
+            Describe what exactly you did before this error occurred
+          </p>
+          <textarea
+            class="form-input"
+            type="text"
+            value={this.state.form.stepsToReproduce}
+            onChange={this.handleStringChange('stepsToReproduce')}
+            rows={4}
+            placeholder={"1. Went to the vendor page\n2. added some items to the cart\n3. edited the notes\n4. clicked checkout"}
+          />
         </div>
         <div class="form-group">
           <label class="form-group__label">
@@ -234,29 +258,25 @@ export class Form extends React.Component<FormProps, FormState> {
         </div>
         <div class="form-group">
           <label class="form-group__label">
-            Console Errors:
-            <textarea
-              class="form-input"
-              type="text"
-              value={this.state.form.consoleErrors}
-              onChange={this.handleStringChange('consoleErrors')}
-            />
+            Console Errors
           </label>
+          <textarea
+            class="form-input"
+            type="text"
+            style={{fontFamily: 'monospace'}}
+            value={this.state.form.consoleErrors}
+            onChange={this.handleStringChange('consoleErrors')}
+            rows={5}
+          />
         </div>
         <div class="form-group">
-          Screenshot:
+          <label class="form-group__label">
+            Screenshot
+          </label>
           <div style="width: 100%;">
             <img src={this.state.form.screenshot}/>
           </div>
         </div>
-        <button
-          class="button-link"
-          style="padding-bottom: 1rem;"
-          type="button"
-          onClick={this.props.onReset}
-        >
-          Reset
-        </button>
         <button
           class="button button--primary button--fullwidth"
           type="submit"
