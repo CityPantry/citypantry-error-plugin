@@ -26,12 +26,11 @@ export class Form extends React.Component<FormProps, FormState> {
         url: props.snapshot.url || '',
         time: props.snapshot.time || '',
         stepsToReproduce: '',
-        //screenshot;
         currentUser: '',
         isMasquerading: false,
         consoleErrors: '',
         screenshot: props.snapshot.screenshot,
-        urgency: undefined
+        urgency: Urgency.LOW
       }
     };
 
