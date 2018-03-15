@@ -2,6 +2,7 @@ import * as React from 'preact';
 import { Report, Urgency } from '../../models';
 
 export interface PopupBodyProps {
+  onSubmit(report: Report): void;
 }
 
 interface PopupBodyState {
@@ -57,8 +58,9 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
   }
 
   handleSubmit(event) {
-    alert('A value was submitted: ' + JSON.stringify(this.state.form));
     event.preventDefault();
+
+    this.props.onSubmit(this.state.form);
   }
 
   render() {
