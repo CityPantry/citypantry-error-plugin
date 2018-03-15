@@ -13,16 +13,16 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   console.log(params);
 
   const formattedReport =
-`1. ${params.name}
-2. ${params.description}
-3. ${params.impact}
-4. ${params.affectedPeople}
-5. ${params.url}
-6. ${params.time}
-7. ${params.stepsToReproduce}
-8. ${params.currentUser}
-9. ${params.isMasquerading}
-10. ${params.urgency}`;
+`Name: ${params.name}
+Description: ${params.description}
+Urgency: ${params.urgency}
+Impact: ${params.impact}
+Affected People: ${params.affectedPeople}
+URL: ${params.url}
+Time: ${params.time}
+Current user: ${params.currentUser}
+Are you masquerading?: ${params.isMasquerading}
+Steps to reproduce:\n ${params.stepsToReproduce}`;
 
   try {
     await slackApi
