@@ -2,6 +2,7 @@ import * as React from 'preact';
 import { Background } from '../shared/background.interface';
 import { State } from '../shared/state.interface';
 import { PopupBody } from './popup-body';
+import { Report } from '../../models';
 
 export interface PopupState {
 }
@@ -16,6 +17,7 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
     super();
 
     this.state = {};
+    this.submitReport = this.submitReport.bind(this);
   }
 
   public componentDidMount(): void {
@@ -28,7 +30,11 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
     this.unsubscribe();
   }
 
+  public submitReport(report: Report): void {
+    console.log('Report submitted!', report);
+  }
+
   public render(): JSX.Element {
-    return <PopupBody />;
+    return <PopupBody onSubmit={this.submitReport}/>;
   }
 }
