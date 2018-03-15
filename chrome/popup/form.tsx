@@ -80,120 +80,189 @@ export class Form extends React.Component<FormProps, FormState> {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <div>
-          <label>
+      <form
+        class="form"
+        style="padding: 8px;"
+        onSubmit={this.handleSubmit}
+      >
+        <div class="form-group">
+          <label class="form-group__label">
             Your Name:
-            <input type="text" value={this.state.form.name} onChange={this.handleStringChange('name')}/>
-          </label>
-        </div>
-        <div>
-          <label>
-            What's Wrong?
-            <textarea type="text" value={this.state.form.description} onChange={this.handleStringChange('description')}/>
-          </label>
-        </div>
-        <div>
-          <label>
-            Impact:
-            <input type="text" value={this.state.form.impact} onChange={this.handleStringChange('impact')}/>
-          </label>
-        </div>
-        <div>
-          <label>
-            Urgency:
-            {/*<textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')} />*/}
-          </label>
-        </div>
-        <div>
-          <label>
-            Who does this affect? (You, customers, )
-            <input type="text" value={this.state.form.affectedPeople} onChange={this.handleStringChange('affectedPeople')}/>
-          </label>
-        </div>
-        <div>
-          Urgency:
-          <label>
             <input
+              class="form-input"
+              type="text"
+              value={this.state.form.name}
+              onChange={this.handleStringChange('name')}/>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">
+            What's Wrong?
+            <textarea
+              class="form-input"
+              type="text"
+              value={this.state.form.description}
+              onChange={this.handleStringChange('description')}
+            />
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="form-group__label">
+            Impact:
+            <input
+              class="form-input"
+              type="text"
+              value={this.state.form.impact}
+              onChange={this.handleStringChange('impact')}/>
+          </label>
+        </div>
+        {/* TODO add console errors */}
+        {/*<div class="form-group">*/}
+        {/*<label class="form-group__label">*/}
+        {/*Console Errors: */}
+        {/*<textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')} />*/}
+        {/*</label>*/}
+        {/*</div>*/}
+        <div class="form-group">
+          <label class="form-group__label">
+            Who does this affect? (You, customers, everyone...)
+            <input
+              class="form-input"
+              type="text"
+              value={this.state.form.affectedPeople}
+              onChange={this.handleStringChange('affectedPeople')}
+            />
+          </label>
+        </div>
+        <div class="form-group">
+          Urgency:
+          <label class="form-choice">
+            <input
+              class="form-choice__input"
               type="radio"
               name="urgency"
               checked={this.state.form.urgency === Urgency.LOW}
               onChange={this.handleChoiceChange('urgency', Urgency.LOW)}
             />
-            This is annoying but it's not stopping me from doing my job
+            <span class="form-choice__label">This is annoying but it's not stopping me from doing my job</span>
           </label>
-          <label>
+          <label class="form-choice">
             <input
+              class="form-choice__input"
               type="radio"
               name="urgency"
               checked={this.state.form.urgency === Urgency.MEDIUM}
               onChange={this.handleChoiceChange('urgency', Urgency.MEDIUM)}
             />
-            I can't do something I need to do in the next week
+            <span class="form-choice__label">I can't do something I need to do in the next week</span>
           </label>
-          <label>
+          <label class="form-choice">
             <input
+              class="form-choice__input"
               type="radio"
               name="urgency"
               checked={this.state.form.urgency === Urgency.HIGH}
               onChange={this.handleChoiceChange('urgency', Urgency.HIGH)}
             />
-            I can't do something I need to do by end of day
+            <span class="form-choice__label">I can't do something I need to do by end of day</span>
           </label>
-          <label>
+          <label class="form-choice">
             <input
+              class="form-choice__input"
               type="radio"
               name="urgency"
               checked={this.state.form.urgency === Urgency.IMMEDIATE}
               onChange={this.handleChoiceChange('urgency', Urgency.IMMEDIATE)}
             />
-            I can't do something that I need right now
+            <span class="form-choice__label">I can't do something that I need right now</span>
           </label>
         </div>
-        <div>
-          <label>
+        <div class="form-group">
+          <label class="form-group__label">
             URL:
-            <input type="text" value={this.state.form.url} onChange={this.handleStringChange('url')}/>
+            <input
+              class="form-input"
+              type="text"
+              value={this.state.form.url}
+              onChange={this.handleStringChange('url')}
+            />
           </label>
         </div>
-        <div>
-        <label>
-        Time:
-        <input type="datetime" value={this.state.form.time} onChange={this.handleStringChange('time')} />
-        </label>
+        <div class="form-group">
+          <label class="form-group__label">
+            Time:
+            <input
+              class="form-input"
+              type="datetime"
+              value={this.state.form.time}
+              onChange={this.handleStringChange('time')}
+            />
+          </label>
         </div>
-        <div>
-          <label>
+        <div class="form-group">
+          <label class="form-group__label">
             Steps to Reproduce: (Describe what exactly you did before this error occurred)
-            <textarea type="text" value={this.state.form.stepsToReproduce} onChange={this.handleStringChange('stepsToReproduce')}/>
+            <textarea
+              class="form-input"
+              type="text"
+              value={this.state.form.stepsToReproduce}
+              onChange={this.handleStringChange('stepsToReproduce')}
+            />
           </label>
         </div>
-        <div>
-          <label>
+        <div class="form-group">
+          <label class="form-group__label">
             Current user:
-            <input type="text" value={this.state.form.currentUser} onChange={this.handleStringChange('currentUser')}/>
+            <input
+              class="form-input"
+              type="text"
+              value={this.state.form.currentUser}
+              onChange={this.handleStringChange('currentUser')}
+            />
           </label>
         </div>
-        <div>
-          <label>
+        <div class="form-group">
+          <label class="form-group__label">
             Are you masquerading?
-            <input type="checkbox" checked={this.state.form.isMasquerading} onChange={this.handleBoolChange('isMasquerading')}/>
+            <input
+              class="form-input"
+              type="checkbox"
+              checked={this.state.form.isMasquerading}
+              onChange={this.handleBoolChange('isMasquerading')}
+            />
           </label>
         </div>
-        <div>
-          <label>
+        <div class="form-group">
+          <label class="form-group__label">
             Console Errors:
-            <textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')}/>
+            <textarea
+              class="form-input"
+              type="text"
+              value={this.state.form.consoleErrors}
+              onChange={this.handleStringChange('consoleErrors')}
+            />
           </label>
         </div>
-        <div>
+        <div class="form-group">
           Screenshot:
-          <div>
-            <img src={this.state.form.screenshot} />
+          <div style="width: 100%;">
+            <img src={this.state.form.screenshot}/>
           </div>
         </div>
-        <button type="button" onClick={this.props.onReset}>Reset</button>
-        <button type="submit">Go</button>
+        <button
+          class="button-link"
+          style="padding-bottom: 1rem;"
+          type="button"
+          onClick={this.props.onReset}
+        >
+          Reset
+        </button>
+        <button
+          class="button button--primary button--fullwidth"
+          type="submit"
+        >
+          Submit bug report
+        </button>
       </form>
     );
   }

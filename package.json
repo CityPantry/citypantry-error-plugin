@@ -16,6 +16,7 @@
     "deploy": "sls deploy -f report"
   },
   "dependencies": {
+    "@citypantry/pattern-library": "https://648472b5c2fd5690e71d33782371c26701484cfe@github.com/CityPantry/pattern-library/tarball/v1.28.9",
     "aws-sdk": "^2.209.0",
     "axios": "^0.18.0",
     "pify": "^3.0.0",
@@ -27,6 +28,7 @@
     "concurrently": "^3.5.1",
     "serverless": "^1.26.1",
     "serverless-webpack": "^5.1.0",
+    "style-loader": "^0.20.3",
     "ts-loader": "4",
     "typescript": "^2.5.2",
     "webpack": "^4.1.1",
