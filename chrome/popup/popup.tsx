@@ -3,6 +3,7 @@ import { Background } from '../shared/background.interface';
 import { State } from '../shared/state.interface';
 import { PopupBody } from './popup-body';
 import { Report } from '../../models';
+import axios from 'axios';
 
 export interface PopupState {
 }
@@ -30,8 +31,9 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
     this.unsubscribe();
   }
 
-  public submitReport(report: Report): void {
+  public async submitReport(report: Report): Promise<void> {
     console.log('Report submitted!', report);
+    await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
   }
 
   public render(): JSX.Element {

@@ -57,6 +57,15 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
     }
   }
 
+  handleChoiceChange(prop: keyof Report, value: any) {
+    return () => this.setState(({ form })  => ({
+      form: {
+        ...form,
+        [prop]: value
+      }
+    }));
+  }
+
   handleSubmit(event) {
     event.preventDefault();
 
@@ -97,6 +106,45 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
           </label>
         </div>
         <div>
+          Urgency:
+          <label>
+            <input
+              type="radio"
+              name="urgency"
+              checked={this.state.form.urgency === Urgency.LOW}
+              onChange={this.handleChoiceChange('urgency', Urgency.LOW)}
+            />
+            This is annoying but it's not stopping me from doing my job
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="urgency"
+              checked={this.state.form.urgency === Urgency.MEDIUM}
+              onChange={this.handleChoiceChange('urgency', Urgency.MEDIUM)}
+            />
+            I can't do something I need to do in the next week
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="urgency"
+              checked={this.state.form.urgency === Urgency.HIGH}
+              onChange={this.handleChoiceChange('urgency', Urgency.HIGH)}
+            />
+            I can't do something I need to do by end of day
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="urgency"
+              checked={this.state.form.urgency === Urgency.IMMEDIATE}
+              onChange={this.handleChoiceChange('urgency', Urgency.IMMEDIATE)}
+            />
+            I can't do something that I need right now, or an order cannot be placed
+          </label>
+        </div>
+        <div>
           <label>
             URL:
             <input type="text" value={this.state.form.url} onChange={this.handleStringChange('url')} />
@@ -123,7 +171,7 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
         <div>
           <label>
             Are you masquerading?
-            <input type="checkbox" checked={this.state.form.isMasquerading} onChange={this.handleBoolChange('name')} />
+            <input type="checkbox" checked={this.state.form.isMasquerading} onChange={this.handleBoolChange('isMasquerading')} />
           </label>
         </div>
         <div>

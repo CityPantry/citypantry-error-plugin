@@ -22,7 +22,8 @@
     "128": "images/icon-128.png"
   },
   "permissions": [
-    "identity"
+    "identity",
+    "https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/*"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
