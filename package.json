@@ -7,12 +7,14 @@
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "concurrently \"yarn serve-background\" \"yarn serve-popup\" -n \"backg,popup\"",
+    "serve": "concurrently \"yarn serve-background\" \"yarn serve-popup\" \"yarn serve-content\" -n \"backg,popup\"",
     "serve-background": "webpack --config webpack.background.config.js --watch --progress --mode development",
     "serve-popup": "webpack --config webpack.popup.config.js --watch --progress --mode development",
-    "build": "yarn build-background && yarn build-popup",
+    "serve-content": "webpack --config webpack.content.config.js --watch --progress --mode development",
+    "build": "yarn build-background && yarn build-popup && yarn build-content",
     "build-background": "webpack --config webpack.background.config.js -p --progress",
     "build-popup": "webpack --config webpack.popup.config.js -p --progress",
+    "build-content": "webpack --config webpack.content.config.js -p --progress",
     "deploy": "sls deploy -f report"
   },
   "dependencies": {
