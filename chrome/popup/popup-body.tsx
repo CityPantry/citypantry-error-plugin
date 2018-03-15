@@ -1,5 +1,6 @@
 import * as React from 'preact';
 import { Report, Urgency } from '../../models';
+import moment = require('moment');
 
 export interface PopupBodyProps {
   name: string | null;
@@ -22,7 +23,7 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
         impact: '',
         affectedPeople: '',
         url: '',
-        time: '',
+        time: moment().format(),
         stepsToReproduce: '',
         //screenshot;
         currentUser: '',
@@ -152,12 +153,12 @@ export class PopupBody extends React.Component<PopupBodyProps, PopupBodyState> {
             <input type="text" value={this.state.form.url} onChange={this.handleStringChange('url')} />
           </label>
         </div>
-        <div>
-          <label>
-            Time:
-            <input type="datetime" value={this.state.form.time} onChange={this.handleStringChange('time')} />
-          </label>
-        </div>
+        {/*<div> We may want to add this back in and allow editing time */}
+          {/*<label>*/}
+            {/*Time:*/}
+            {/*<input type="datetime" value={this.state.form.time} onChange={this.handleStringChange('time')} />*/}
+          {/*</label>*/}
+        {/*</div>*/}
         <div>
           <label>
             Steps to Reproduce: (Describe what exactly you did before this error occurred)

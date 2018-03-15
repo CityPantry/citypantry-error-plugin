@@ -4,6 +4,7 @@ import { State } from '../shared/state.interface';
 import { PopupBody } from './popup-body';
 import { Report } from '../../models';
 import axios from 'axios';
+import  * as moment from 'moment';
 
 export interface PopupState {
   isLoading: boolean;
