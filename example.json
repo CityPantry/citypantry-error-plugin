@@ -1,0 +1,11 @@
+{
+  "description": "An example description",
+  "impact": "OMG",
+  "affectedPeople": "everyone",
+  "url": "citypantry.com",
+  "time": "right fucking now bitches!!!!",
+  "stepsToReproduce": "1.2.3.4",
+  "currentUser": "lewis",
+  "isMasquerading": true,
+  "consoleBlob": "foo() blew up like really bad bro"
+}
