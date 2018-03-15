@@ -1,10 +1,16 @@
 {
   "name": "citypantry-error-plugin",
+  "author": "Lewis Wilcock <lewis.wilcock@gmail.com>, Paul Lessing <paul@paullessing.com>",
+  "license": "MIT",
   "version": "0.0.1",
   "description": "Error reporting chrome plugin for citypantry.com",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "serverless-api-handlers": "paullessing/serverless-api-handlers"
   },
   "devDependencies": {
     "serverless": "^1.26.1",
@@ -12,7 +18,5 @@
     "ts-loader": "^2.3.7",
     "typescript": "^2.5.2",
     "webpack": "^3.6.0"
-  },
-  "author": "Lewis Wilcock <lewis.wilcock@gmail.com>, Paul Lessing <paul@paullessing.com>",
-  "license": "MIT"
+  }
 }
