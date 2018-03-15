@@ -3,8 +3,14 @@ import { slackApi } from '../api/slack.api';
 import { Report } from '../../models';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
+  console.log('request');
+  console.log(request);
 
-  const params = request.body as Report;
+  // Shouldn't need to JSON parse this but we can fix later
+  const params = JSON.parse(request.body) as Report;
+
+  console.log('body');
+  console.log(params);
 
   const formattedReport =
 `1. ${params.name}

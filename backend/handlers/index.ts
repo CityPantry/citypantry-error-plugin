@@ -3,6 +3,6 @@ import { HandlerWrapper } from 'serverless-api-handlers';
 
 export function getHandlers(wrapper: HandlerWrapper) {
   return {
-    report: wrapper.wrap(slack.report),
+    report: wrapper.wrap(slack.report, { cors: true }),
   }
 }
