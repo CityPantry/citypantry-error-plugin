@@ -37,6 +37,7 @@
   "permissions": [
     "tabs",
     "identity",
+    "cookies",
     "https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/*",
     "https://www.googleapis.com/oauth2/v2/userinfo",
     "<all_urls>"

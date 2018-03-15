@@ -8,6 +8,13 @@ export interface Snapshot {
   time: string;
   screenshot: string;
   debugData: string;
+  currentUser: UserSnapshot | null;
+  isMasquerading: boolean;
+}
+
+export interface UserSnapshot {
+  type: 'user' | 'customer' | 'vendor';
+  name: string;
 }
 
 export interface State {

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { withAuthToken } from './auth';
 import { Report } from '../../models';
 import Tab = chrome.tabs.Tab;
+import Cookie = chrome.cookies.Cookie;
 
 const _export: {
   background: Background
@@ -64,9 +65,8 @@ class BackgroundHandler {
     const screenshot = await this.takeScreenshot(windowId);
     const time = this.getTime();
     const reduxData = await this.getReduxState(tabId as number);
-    const userString = await this.getCurrentUserState(tabId as number);
-    const user = userString ? JSON.parse(userString) : {};
-    console.log(user);
+    const { currentUser, isMasquerading } = await this.getCurrentUser(url as string);
+    console.log(currentUser, isMasquerading);
 
     this.updateState({
       ...this.state,
@@ -75,7 +75,9 @@ class BackgroundHandler {
         url: url || '',
         time,
         screenshot,
-        debugData: reduxData || ''
+        debugData: reduxData || '',
+        currentUser,
+        isMasquerading
       }
     });
   }
@@ -132,14 +134,88 @@ class BackgroundHandler {
     });
   }
 
-  private getCurrentUserState(tabId: number): Promise<string> {
-    return new Promise((resolve) => {
-      chrome.tabs.sendMessage(tabId, 'get-current-user-state', (response) => {
-        resolve(response || '');
-      });
+  private async getCurrentUser(url: string): Promise<{ currentUser: {
+    name: string;
+    type: 'user' | 'customer' | 'vendor'
+  } | null, isMasquerading: boolean }> {
+    const domainMatch = url.match(/(^(https?):\/\/(?:www\.)?(.*?))\//i);
+    if (!domainMatch) {
+      console.log('Could not parse URL:', url);
+      return {
+        currentUser: null,
+        isMasquerading: false
+      };
+    }
+
+    const host = domainMatch[1];
+    const protocol = domainMatch[2];
+    const server = domainMatch[3];
+    const apiUrl = `${protocol}://api.${server}/users/get-authenticated-user`
+
+    const [
+      token,
+      userId,
+      staffMasqueraderToken,
+      staffMasqueraderId
+    ] = await Promise.all([
+      this.getCookie(host, 'token'),
+      this.getCookie(host, 'userId'),
+      this.getCookie(host, 'staffMasqueraderToken'),
+      this.getCookie(host, 'staffMasqueraderId'),
+    ]);
+
+    console.log('Got tokens?', token, userId);
+
+    if (!token) {
+      return {
+        currentUser: null,
+        isMasquerading: false
+      };
+    }
+
+    const headers = {
+      'citypantry-authtoken': token,
+      'citypantry-userid': userId
+    };
+    if (staffMasqueraderId && staffMasqueraderToken) {
+      headers['citypantry-staffmasqueraderid'] = staffMasqueraderId;
+      headers['citypantry-staffmasqueradertoken'] = staffMasqueraderToken;
+    }
+
+    const response = await axios.get(apiUrl, { headers });
+
+    console.log(response.data);
+
+    const name = response.data.user.name;
+    const isMasquerading = !!response.data.sudo;
+    const type = response.data.customer ? 'customer'
+      : response.data.vendor ? 'vendor' :
+        'user';
+
+    const fullName = name + (type === 'customer' ? ` (Customer: ${response.data.customer.companyName})`:
+        type === 'vendor' ? ` (Vendor)` : ''
+    );
+
+    return {
+      currentUser: {
+        type, name: fullName
+      },
+      isMasquerading
+    }
+  }
+
+  private async getCookie(url: string, name: string): Promise<string | null> {
+    console.log('Getting cookie', name, url);
+    const cookie = await new Promise<Cookie | null>((resolve) => {
+      chrome.cookies.get({
+        url,
+        name
+      }, resolve);
     });
+    return cookie && cookie.value || null;
   }
 }
+
 
 function getReduxLogsFromPage(): string {
   console.log((window as any).__cp_bug_events__);
