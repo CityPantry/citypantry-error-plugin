@@ -13,6 +13,7 @@
       "chrome"
     ],
     "jsx": "react",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true
   }
 }

@@ -30,7 +30,9 @@ export async function withAuthToken<T>(callback: (token: string) => Promise<T>):
       return await callback(token);
     } catch (e) {
       console.log('Error doing authed action', e);
-      if (numRetries < 3 && (e as AxiosError).response.data.error.code === 401 && (e as AxiosError).response.data.error.message === 'Invalid Credentials') {
+      const axiosError = e as AxiosError;
+      const responseData = axiosError.response && axiosError.response.data && axiosError.response.data.error;
+      if (numRetries < 3 && responseData && responseData.code === 401 && responseData.message === 'Invalid Credentials') {
         console.log('Failed to authenticate retrying: ', e);
       } else {
         throw e;

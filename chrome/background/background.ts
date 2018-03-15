@@ -1,7 +1,8 @@
 import { Background } from '../shared/background.interface';
-import { State } from '../shared/state.interface';
+import { EMPTY_STATE, State } from '../shared/state.interface';
 import axios from 'axios';
 import { withAuthToken } from './auth';
+import { Report } from '../../models';
 
 const _export: {
   background: Background
@@ -12,13 +13,7 @@ class BackgroundHandler {
   private state: State;
 
   constructor() {
-    this.state = {
-      email: null,
-      name: null,
-      url: null,
-      isLoading: true,
-      time: null,
-    };
+    this.state = EMPTY_STATE;
   }
 
   public subscribe(subscriber: (state: any) => void): () => void {
@@ -48,22 +43,45 @@ class BackgroundHandler {
 
     this.updateState({
       ...this.state,
-      email,
-      name,
-      isLoading: false,
+      metadata: {
+        email,
+        name,
+      }
     });
 
     return { email, name };
   }
 
   public async takeSnapshot(): Promise<void> {
+    this.updateState({
+      ...this.state,
+      isLoadingSnapshot: true,
+      snapshot: null
+    });
+
     const url = await this.fetchCurrentUrl();
     const time = new Date().toISOString();
 
     this.updateState({
       ...this.state,
-      url,
-      time,
+      isLoadingSnapshot: false,
+      snapshot: {
+        url,
+        time
+      }
+    });
+  }
+
+  public async sendReport(report: Report): Promise<void> {
+    // TODO error handling
+    await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
+  }
+
+  public reset(): void {
+    this.updateState({
+      ...this.state,
+      snapshot: null,
+      isLoadingSnapshot: false
     });
   }
 
@@ -90,4 +108,6 @@ _export.background = {
   subscribeToState: handler.subscribe.bind(handler),
   getInitialState: handler.getInitialState.bind(handler),
   takeSnapshot: handler.takeSnapshot.bind(handler),
+  sendReport: handler.sendReport.bind(handler),
+  reset: handler.reset.bind(handler)
 };
