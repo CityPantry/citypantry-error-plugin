@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './chrome/content/reduxTracking.ts',
+  entry: './chrome/content/index.ts',
   output: {
     filename: './chrome/dist/js/content.js',
     path: __dirname

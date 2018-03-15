@@ -7,7 +7,7 @@
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "concurrently \"yarn serve-background\" \"yarn serve-popup\" \"yarn serve-content\" -n \"backg,popup\"",
+    "serve": "concurrently \"yarn serve-background\" \"yarn serve-popup\" \"yarn serve-content\" -n \"backg,popup,conte\"",
     "serve-background": "webpack --config webpack.background.config.js --watch --progress --mode development",
     "serve-popup": "webpack --config webpack.popup.config.js --watch --progress --mode development",
     "serve-content": "webpack --config webpack.content.config.js --watch --progress --mode development",
