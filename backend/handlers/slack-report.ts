@@ -1,13 +1,13 @@
 import { HandlerRequest, HandlerResponse } from 'serverless-api-handlers';
+import { slackApi } from '../api/slack.api';
 
-export async function hello(request: HandlerRequest, done: (response?: HandlerResponse) => void): Promise<HandlerResponse> {
-  const response = {
+export async function hello(request: HandlerRequest): Promise<HandlerResponse> {
+
+  slackApi.post("Hello, world!")
+    .catch(reason => console.log(reason));
+
+  return {
     statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!',
-      input: event,
-    }),
+    body: '"HIYA"',
   };
-
-  return response;
 }
