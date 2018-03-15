@@ -14,6 +14,19 @@
       "js/background.js"
     ]
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://citypantry.com/*",
+        "https://*.citypantry.com/*",
+        "https://*.c8y.tech/*",
+        "http://*.c8y.tech/*",
+        "http://www.local.c8y.tech/*"
+      ],
+      "js": ["js/content.js"]
+    }
+  ],
+  "web_accessible_resources": ["/js/content.js"],
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
