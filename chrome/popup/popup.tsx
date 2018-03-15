@@ -1,6 +1,7 @@
 import * as React from 'preact';
 import { Background } from '../shared/background.interface';
 import { State } from '../shared/state.interface';
+import { PopupBody } from './popup-body';
 
 export interface PopupState {
 }
@@ -28,8 +29,6 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
   }
 
   public render(): JSX.Element {
-    return <div>
-      Hello World
-    </div>;
+    return <PopupBody />;
   }
 }
