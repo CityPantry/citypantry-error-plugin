@@ -12,23 +12,38 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
 
   return {
     push: (event: DebugEvent): void => {
-      events = events.slice(0, 40).concat(event);
+      events = events.slice(-40).concat(event);
       console.log(event);
     },
     slice: (): DebugEvent[] => {
       const types = events.map(event => event.type);
       const firstState = types.indexOf('state');
-      const lastState = types.lastIndexOf('state');
+      let lastState = types.lastIndexOf('state');
+      if (lastState === types.length - 1) {
+        // Can't work with the last state because we don't know what action caused it, although this should not happen
+        lastState = types.lastIndexOf('state', lastState - 1);
+      }
 
-      return events.filter((event, index) => {
-        if (index < firstState || index > lastState) {
-          return false;
+      const returnList: DebugEvent[] = [];
+
+      let i = firstState;
+      while (i <= lastState) {
+        const state = events[i];
+        const action = events[i + 1];
+
+        if (i === firstState) {
+          returnList.push(state);
+        } else {
+          returnList.push(action);
         }
-        if (event.type === 'state' && index > firstState || index < lastState) {
-          return false;
+        if (i === lastState) {
+          returnList.push(state);
         }
-        return true;
-      })
+
+        i += 2;
+      }
+
+      return returnList;
     }
   }
 }
@@ -43,6 +58,8 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
     th.appendChild(s);
   }
 
+  // If we're in the content script setup, we won't be able to access the window variables.
+  // Re-inject ourselves so we can do it properly.
   if (!document.getElementById('cp-bug-content-script')) {
     injectScript( chrome.extension.getURL('/js/content.js'), 'body');
   } else {

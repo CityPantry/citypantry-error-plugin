@@ -19,7 +19,9 @@
       "matches": [
         "https://citypantry.com/*",
         "https://*.citypantry.com/*",
-        "https://*.c8y.tech/*"
+        "https://*.c8y.tech/*",
+        "http://*.c8y.tech/*",
+        "http://www.local.c8y.tech/*"
       ],
       "js": ["js/content.js"]
     }
