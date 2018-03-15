@@ -4,6 +4,7 @@ import axios from 'axios';
 import { withAuthToken } from './auth';
 import { Report } from '../../models';
 import Tab = chrome.tabs.Tab;
+import { config } from '../../config';
 
 const _export: {
   background: Background
@@ -31,7 +32,7 @@ class BackgroundHandler {
 
   public async getInitialState(force?: boolean): Promise<{ email: string, name: string }> {
     const apiResponse = await withAuthToken((token) =>
-      axios.get('https://www.googleapis.com/oauth2/v2/userinfo?key=AIzaSyAvrSAsf1qwfysLEAxp_jVRSWlQ2nlAAps', {
+      axios.get('https://www.googleapis.com/oauth2/v2/userinfo?key=' + config.oauthToken, {
         headers: {
           'Authorization': 'Bearer ' + token
         }
