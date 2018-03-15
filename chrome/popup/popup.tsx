@@ -33,7 +33,9 @@ export class Popup extends React.Component<any, PopupState> implements React.Com
 
   public async submitReport(report: Report): Promise<void> {
     console.log('Report submitted!', report);
-    await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
+
+    console.log(await getBackground().getLoggedInUserName());
+    //await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
   }
 
   public render(): JSX.Element {
