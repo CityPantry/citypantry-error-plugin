@@ -64,6 +64,9 @@ class BackgroundHandler {
     const screenshot = await this.takeScreenshot(windowId);
     const time = this.getTime();
     const reduxData = await this.getReduxState(tabId as number);
+    const userString = await this.getCurrentUserState(tabId as number);
+    const user = userString ? JSON.parse(userString) : {};
+    console.log(user);
 
     this.updateState({
       ...this.state,
@@ -123,10 +126,16 @@ class BackgroundHandler {
 
   private getReduxState(tabId: number): Promise<string> {
     return new Promise((resolve) => {
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabId, 'get-redux-state-slice', (response) => {
-          resolve(response);
-        });
+      chrome.tabs.sendMessage(tabId, 'get-redux-state-slice', (response) => {
+        resolve(response);
+      });
+    });
+  }
+
+  private getCurrentUserState(tabId: number): Promise<string> {
+    return new Promise((resolve) => {
+      chrome.tabs.sendMessage(tabId, 'get-current-user-state', (response) => {
+        resolve(response || '');
       });
     });
   }

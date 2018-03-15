@@ -1,7 +1,7 @@
 import { HandlerRequest, HandlerResponse } from 'serverless-api-handlers';
 import { slackApi } from '../api/slack.api';
 import { Report } from '../../models';
-import { config } from '../config';
+import { config } from '../../config';
 import { awsApi } from '../api/aws.api';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
