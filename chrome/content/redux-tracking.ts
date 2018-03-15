@@ -4,7 +4,8 @@ declare const window: Window & {
   __cp_bug_events__: {
     push(event: DebugEvent): void;
     slice(start?: number, end?: number): void;
-  }
+  };
+  console: any;
 };
 
 export function createDebugEventManager(initialEvents: DebugEvent[]) {
@@ -47,6 +48,29 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
   }
 }
 
+export function replaceConsole(): { name: string, args: any[] }[] {
+  const log: { name: string, args: any[] }[] = [];
+  Object.assign(window, {
+    console: new Proxy(window.console, {
+      get: (target, name) => {
+        if (['log', 'warn', 'error', 'info', 'debug'].indexOf(`${name}`) >= 0) {
+          return (...args) => {
+            log.push({
+              name: `${name}`,
+              args
+            });
+            target['log'](log[log.length - 1]);
+            return (target[name] as Function).apply(args);
+          }
+        } else {
+          return target[name];
+        }
+      }
+    })
+  });
+  return log;
+}
+
 (() => {
   function injectScript(file, node) {
     const th = document.getElementsByTagName(node)[0];
@@ -77,11 +101,16 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
     const manager = createDebugEventManager(currentState);
     window.__cp_bug_events__ = manager;
 
+    const log = replaceConsole();
+
     window.document.addEventListener('get-redux-state-slice', () => {
       const area = document.createElement('textarea');
       area.style.display = 'none';
       area.id = '__cp-redux-state-slice';
-      area.value = JSON.stringify(manager.slice());
+      area.value = JSON.stringify({
+        redux: manager.slice(),
+        console: log
+      });
       document.body.appendChild(area);
     });
     window.document.addEventListener('cleanup-redux-state-slice', () => {
