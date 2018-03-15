@@ -13,12 +13,12 @@ provider:
   profile: citypantry
 
 functions:
-  hello:
-    handler: handler.hello
+  report:
+    handler: handler.report
     events:
       - http:
           method: post
-          path: hello
+          path: report
 
 custom:
   webpack:

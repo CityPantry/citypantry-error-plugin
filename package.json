@@ -12,7 +12,8 @@
     "serve-popup": "webpack --config webpack.popup.config.js --watch --progress --mode development",
     "build": "yarn build-background && yarn build-popup",
     "build-background": "webpack --config webpack.background.config.js -p --progress",
-    "build-popup": "webpack --config webpack.popup.config.js -p --progress"
+    "build-popup": "webpack --config webpack.popup.config.js -p --progress",
+    "deploy": "sls deploy -f report"
   },
   "dependencies": {
     "axios": "^0.18.0",

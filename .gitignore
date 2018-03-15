@@ -26,6 +26,7 @@ npm-debug.log
 testem.log
 /typings
 yarn-error.log
+.webpack
 
 # System Files
 .DS_Store
