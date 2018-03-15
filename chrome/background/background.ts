@@ -60,9 +60,10 @@ class BackgroundHandler {
       snapshot: null
     });
 
-    const { url, windowId } = await this.fetchCurrentTab();
+    const { url, windowId, id: tabId } = await this.fetchCurrentTab();
     const screenshot = await this.takeScreenshot(windowId);
     const time = new Date().toISOString();
+    const reduxData = await this.getReduxState(tabId as number);
 
     this.updateState({
       ...this.state,
@@ -70,7 +71,8 @@ class BackgroundHandler {
       snapshot: {
         url: url || '',
         time,
-        screenshot
+        screenshot,
+        debugData: reduxData || ''
       }
     });
   }
@@ -111,6 +113,24 @@ class BackgroundHandler {
     }
     this.subscriber(this.state);
   }
+
+  private getReduxState(tabId: number): Promise<string> {
+    return new Promise((resolve) => {
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabId, 'get-redux-state-slice', (response) => {
+          resolve(response);
+        });
+      });
+    });
+  }
+}
+
+function getReduxLogsFromPage(): string {
+  console.log((window as any).__cp_bug_events__);
+  if (!(window as any).__cp_bug_events__) {
+    return '';
+  }
+  return JSON.stringify((window as any).__cp_bug_events__.slice());
 }
 
 const handler = new BackgroundHandler();

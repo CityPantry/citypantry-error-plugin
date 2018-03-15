@@ -7,6 +7,7 @@ export interface Snapshot {
   url: string;
   time: string;
   screenshot: string;
+  debugData: string;
 }
 
 export interface State {

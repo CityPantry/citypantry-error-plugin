@@ -4,7 +4,8 @@ declare const window: Window & {
   __cp_bug_events__: {
     push(event: DebugEvent): void;
     slice(start?: number, end?: number): void;
-  }
+  };
+  console: any;
 };
 
 export function createDebugEventManager(initialEvents: DebugEvent[]) {
@@ -13,7 +14,6 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
   return {
     push: (event: DebugEvent): void => {
       events = events.slice(-40).concat(event);
-      console.log(event);
     },
     slice: (): DebugEvent[] => {
       const types = events.map(event => event.type);
@@ -48,6 +48,29 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
   }
 }
 
+export function replaceConsole(): { name: string, args: any[] }[] {
+  const log: { name: string, args: any[] }[] = [];
+  Object.assign(window, {
+    console: new Proxy(window.console, {
+      get: (target, name) => {
+        if (['log', 'warn', 'error', 'info', 'debug'].indexOf(`${name}`) >= 0) {
+          return (...args) => {
+            log.push({
+              name: `${name}`,
+              args
+            });
+            target['log'](log[log.length - 1]);
+            return (target[name] as Function).apply(args);
+          }
+        } else {
+          return target[name];
+        }
+      }
+    })
+  });
+  return log;
+}
+
 (() => {
   function injectScript(file, node) {
     const th = document.getElementsByTagName(node)[0];
@@ -62,10 +85,41 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
   // Re-inject ourselves so we can do it properly.
   if (!document.getElementById('cp-bug-content-script')) {
     injectScript( chrome.extension.getURL('/js/content.js'), 'body');
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request === 'get-redux-state-slice') {
+        window.document.dispatchEvent(new CustomEvent('get-redux-state-slice'));
+        const area = window.document.getElementById('__cp-redux-state-slice') as HTMLTextAreaElement;
+        const value = area && area.value || '';
+        window.document.dispatchEvent(new CustomEvent('cleanup-redux-state-slice'));
+        sendResponse(value);
+      }
+    });
   } else {
     const currentState: DebugEvent[] = Array.prototype.slice.call(window.__cp_bug_events__ || []);
 
-    window.__cp_bug_events__ = createDebugEventManager(currentState) as any; // TODO type
+    const manager = createDebugEventManager(currentState);
+    window.__cp_bug_events__ = manager;
+
+    const log = replaceConsole();
+
+    window.document.addEventListener('get-redux-state-slice', () => {
+      const area = document.createElement('textarea');
+      area.style.display = 'none';
+      area.id = '__cp-redux-state-slice';
+      area.value = JSON.stringify({
+        redux: manager.slice(),
+        console: log
+      });
+      document.body.appendChild(area);
+    });
+    window.document.addEventListener('cleanup-redux-state-slice', () => {
+      const area = document.getElementById('__cp-redux-state-slice') as HTMLTextAreaElement;
+      if (area) {
+        area.parentElement && area.parentElement.removeChild(area);
+      }
+    });
+
     console.info('Loaded Debug Event Manager!');
   }
 
