@@ -3,6 +3,7 @@ import { EMPTY_STATE, State } from '../shared/state.interface';
 import axios from 'axios';
 import { withAuthToken } from './auth';
 import { Report } from '../../models';
+import Tab = chrome.tabs.Tab;
 
 const _export: {
   background: Background
@@ -59,15 +60,17 @@ class BackgroundHandler {
       snapshot: null
     });
 
-    const url = await this.fetchCurrentUrl();
+    const { url, windowId } = await this.fetchCurrentTab();
+    const screenshot = await this.takeScreenshot(windowId);
     const time = new Date().toISOString();
 
     this.updateState({
       ...this.state,
       isLoadingSnapshot: false,
       snapshot: {
-        url,
-        time
+        url: url || '',
+        time,
+        screenshot
       }
     });
   }
@@ -85,10 +88,18 @@ class BackgroundHandler {
     });
   }
 
-  private fetchCurrentUrl(): Promise<string> {
+  private fetchCurrentTab(): Promise<Tab> {
     return new Promise((resolve) => {
       chrome.tabs.query({ active: true, lastFocusedWindow: true }, (result) => {
-        resolve(result[0].url);
+        resolve(result[0]);
+      });
+    });
+  }
+
+  private takeScreenshot(windowId: number): Promise<string> {
+    return new Promise((resolve) => {
+      chrome.tabs.captureVisibleTab(windowId, { format: 'png'}, (dataUrl) => {
+        resolve(dataUrl);
       });
     });
   }

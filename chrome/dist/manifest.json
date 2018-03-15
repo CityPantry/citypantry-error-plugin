@@ -25,7 +25,8 @@
     "tabs",
     "identity",
     "https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/*",
-    "https://www.googleapis.com/oauth2/v2/userinfo"
+    "https://www.googleapis.com/oauth2/v2/userinfo",
+    "<all_urls>"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "oauth2": {

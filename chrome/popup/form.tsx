@@ -30,6 +30,7 @@ export class Form extends React.Component<FormProps, FormState> {
         currentUser: '',
         isMasquerading: false,
         consoleErrors: '',
+        screenshot: props.snapshot.screenshot,
         urgency: undefined
       }
     };
@@ -185,6 +186,12 @@ export class Form extends React.Component<FormProps, FormState> {
             Console Errors:
             <textarea type="text" value={this.state.form.consoleErrors} onChange={this.handleStringChange('consoleErrors')}/>
           </label>
+        </div>
+        <div>
+          Screenshot:
+          <div>
+            <img src={this.state.form.screenshot} />
+          </div>
         </div>
         <button type="button" onClick={this.props.onReset}>Reset</button>
         <button type="submit">Go</button>

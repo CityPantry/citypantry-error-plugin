@@ -6,6 +6,7 @@ export interface Metadata {
 export interface Snapshot {
   url: string;
   time: string;
+  screenshot: string;
 }
 
 export interface State {
