@@ -9,6 +9,10 @@
       "es6",
       "dom"
     ],
+    "types": [
+      "chrome"
+    ],
+    "jsx": "react",
     "skipLibCheck": true
   }
 }

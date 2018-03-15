@@ -1,0 +1,28 @@
+{
+  "name": "CP Error Reporting",
+  "short_name": "CP Error Reporting",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Easily report errors on citypantry.com",
+  "homepage_url": "http://info.citypantry.com/careers",
+  "browser_action": {
+    "default_title": "Report an Error",
+    "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
+    "128": "images/icon-128.png"
+  },
+  "permissions": [
+    "identity"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
