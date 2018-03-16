@@ -37,7 +37,7 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack 
           </button>
         </div>
         {!state.isValidPage ? <p class="status-text--red">
-          Looks like you're not on a CityPantry.com page... Go to the problem page and try again.
+          Looks like you're not on a citypantry.com page... Go to the problem page and try again.
         </p> : null}
       </div>;
     } else {
