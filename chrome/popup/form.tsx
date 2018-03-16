@@ -12,28 +12,33 @@ export interface FormProps {
 interface FormState {
   form: Partial<Report>;
   canEditCurrentUser;
+  submitted: boolean;
+  invalidFields: string[];
 }
 
 export class Form extends React.Component<FormProps, FormState> {
 
   constructor(props: FormProps) {
     super(props);
+    const form = {
+      name: props.metadata.name || '',
+      description: '',
+      impact: '',
+      affectedPeople: '',
+      url: props.snapshot.url || '',
+      time: props.snapshot.time || '',
+      stepsToReproduce: '',
+      currentUser: props.snapshot.currentUser && props.snapshot.currentUser.name || '',
+      isMasquerading: props.snapshot.isMasquerading,
+      consoleErrors: props.snapshot.debugData || '',
+      screenshot: props.snapshot.screenshot,
+      urgency: Urgency.LOW
+    };
     this.state = {
-      form: {
-        name: props.metadata.name || '',
-        description: '',
-        impact: '',
-        affectedPeople: '',
-        url: props.snapshot.url || '',
-        time: props.snapshot.time || '',
-        stepsToReproduce: '',
-        currentUser: props.snapshot.currentUser && props.snapshot.currentUser.name || '',
-        isMasquerading: props.snapshot.isMasquerading,
-        consoleErrors: props.snapshot.debugData || '',
-        screenshot: props.snapshot.screenshot,
-        urgency: Urgency.LOW
-      },
-      canEditCurrentUser: !props.snapshot.currentUser
+      form,
+      canEditCurrentUser: !props.snapshot.currentUser,
+      submitted: false,
+      invalidFields: this.getInvalidFields(form)
     };
 
     this.handleStringChange = this.handleStringChange.bind(this);
@@ -43,41 +48,81 @@ export class Form extends React.Component<FormProps, FormState> {
 
   handleStringChange(prop: keyof Report) {
     return (event) => {
-      this.setState(({ form }) => ({
-        form: {
-          ...form,
-          [prop]: event.target.value
-        }
-      }));
+      this.updateForm({
+        [prop]: event.target.value
+      });
     }
   }
 
   handleBoolChange(prop: keyof Report) {
     return (event) => {
-      this.setState(({ form }) => ({
-        form: {
-          ...form,
-          [prop]: !!event.target.checked
-        }
-      }));
+      this.updateForm({
+        [prop]: !!event.target.checked
+      });
     }
   }
 
   handleChoiceChange(prop: keyof Report, value: any) {
-    return () => this.setState(({ form }) => ({
-      form: {
+    return () => this.updateForm({
+      [prop]: value
+    });
+  }
+
+  updateForm(newValue: Partial<Report>): void {
+    this.setState(({ form }) => {
+      const newForm = {
         ...form,
-        [prop]: value
+        ...newValue
+      };
+      return {
+        form: newForm,
+        invalidFields: this.getInvalidFields(newForm)
       }
-    }));
+    });
   }
 
   handleSubmit(event) {
     event.preventDefault();
 
-    // TODO Validation and error handling here
+    if (!this.state.submitted) {
+      this.setState((state) => ({
+        ...state,
+        submitted: true
+      }));
+    }
+
+    if (this.state.invalidFields.length) {
+      return;
+    }
 
     this.props.onSubmit(this.state.form as Report);
+  }
+
+  getInvalidFields(form: Partial<Report>): string[] {
+    return Object.keys(form).filter((key) => {
+      if (key === 'screenshot' || key === 'consoleErrors') {
+        return false;
+      }
+      if (!this.validate(form[key as keyof Report])) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  isValid(key: keyof Report): boolean {
+    return !this.state.submitted || this.state.invalidFields.indexOf(key) < 0;
+  }
+
+  validate(value: any): boolean {
+    if (typeof value === 'boolean') {
+      return true;
+    }
+    return !!`${value || ''}`.trim();
+  }
+  
+  getClassName(key: keyof Report): string {
+    return 'form-input' + (this.isValid(key) ? '' : ' form-input--error');
   }
 
   render() {
@@ -96,7 +141,7 @@ export class Form extends React.Component<FormProps, FormState> {
             URL
           </label>
           <input
-            class="form-input"
+            className={this.getClassName('url')}
             type="text"
             value={this.state.form.url}
             onChange={this.handleStringChange('url')}
@@ -120,7 +165,7 @@ export class Form extends React.Component<FormProps, FormState> {
             Write a short summary of what should happen vs. what actually happens.
           </p>
           <textarea
-            class="form-input"
+            className={this.getClassName('description')}
             type="text"
             value={this.state.form.description}
             onChange={this.handleStringChange('description')}
@@ -136,7 +181,7 @@ export class Form extends React.Component<FormProps, FormState> {
             What impact is the bug having on you?
           </p>
           <input
-            class="form-input"
+            className={this.getClassName('impact')}
             type="text"
             value={this.state.form.impact}
             onChange={this.handleStringChange('impact')}
@@ -151,7 +196,7 @@ export class Form extends React.Component<FormProps, FormState> {
             Who is affected by this bug?
           </p>
           <input
-            class="form-input"
+            className={this.getClassName('affectedPeople')}
             type="text"
             value={this.state.form.affectedPeople}
             onChange={this.handleStringChange('affectedPeople')}
@@ -214,7 +259,7 @@ export class Form extends React.Component<FormProps, FormState> {
             When did this occur?
           </p>
           <input
-            class="form-input"
+            className={this.getClassName('time')}
             type="datetime-local"
             value={this.state.form.time}
             onChange={this.handleStringChange('time')}
@@ -228,7 +273,7 @@ export class Form extends React.Component<FormProps, FormState> {
             Describe what exactly you did before this error occurred
           </p>
           <textarea
-            class="form-input"
+            className={this.getClassName('stepsToReproduce')}
             type="text"
             value={this.state.form.stepsToReproduce}
             onChange={this.handleStringChange('stepsToReproduce')}
@@ -253,7 +298,7 @@ export class Form extends React.Component<FormProps, FormState> {
           </label>
           <div>
             <input
-              class="form-input"
+              className={this.getClassName('currentUser')}
               type="text"
               value={this.state.form.currentUser}
               onChange={this.handleStringChange('currentUser')}
@@ -277,11 +322,12 @@ export class Form extends React.Component<FormProps, FormState> {
             Console Errors
           </label>
           <textarea
-            class="form-input"
+            className={this.getClassName('consoleErrors')}
             type="text"
             style={{fontFamily: 'monospace'}}
             value={this.state.form.consoleErrors}
             onChange={this.handleStringChange('consoleErrors')}
+            placeholder={'To open the console:\nMac: Cmd + Alt+ J\nWindows: Ctrl + Shift + J'}
             rows={5}
           />
         </div>
@@ -293,6 +339,10 @@ export class Form extends React.Component<FormProps, FormState> {
             <img src={this.state.form.screenshot}/>
           </div>
         </div>
+        { this.state.submitted && this.state.invalidFields.length ?
+          <p style="color: #e93131" className="mb-standard">
+            Please fill out all fields.
+          </p> : null }
         <button
           class="button button--primary button--fullwidth"
           type="submit"
