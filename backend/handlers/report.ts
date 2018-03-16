@@ -49,7 +49,7 @@ function createSlackAttachments(report: Report, imageUrl: string, issueKey: stri
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
     'text': `*Reporter:* ${report.name}
 
-*What's Wrong?:*
+*What's Wrong?*
 ${report.description}
 
 *Time:* ${report.time}
