@@ -17,10 +17,15 @@
   "content_scripts": [
     {
       "matches": [
+        "https://citypantry.com/",
         "https://citypantry.com/*",
+        "https://*.citypantry.com/",
         "https://*.citypantry.com/*",
+        "https://*.c8y.tech/",
         "https://*.c8y.tech/*",
+        "http://*.c8y.tech/",
         "http://*.c8y.tech/*",
+        "http://www.local.c8y.tech/",
         "http://www.local.c8y.tech/*"
       ],
       "js": ["js/content.js"]
@@ -37,6 +42,7 @@
   "permissions": [
     "tabs",
     "identity",
+    "cookies",
     "https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/*",
     "https://www.googleapis.com/oauth2/v2/userinfo",
     "<all_urls>"

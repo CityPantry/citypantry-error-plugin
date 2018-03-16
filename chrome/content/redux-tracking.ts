@@ -59,7 +59,6 @@ export function replaceConsole(): { name: string, args: any[] }[] {
               name: `${name}`,
               args
             });
-            target['log'](log[log.length - 1]);
             return (target[name] as Function).apply(args);
           }
         } else {

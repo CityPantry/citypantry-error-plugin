@@ -42,4 +42,3 @@ jspm_packages
 
 # Things that absolutely should not be committed
 config/config.ts
-

@@ -1,1 +1,1 @@
-export * from './redux-tracking';
+import './redux-tracking';

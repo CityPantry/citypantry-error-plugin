@@ -11,6 +11,7 @@ export interface FormProps {
 
 interface FormState {
   form: Partial<Report>;
+  canEditCurrentUser;
 }
 
 export class Form extends React.Component<FormProps, FormState> {
@@ -26,12 +27,13 @@ export class Form extends React.Component<FormProps, FormState> {
         url: props.snapshot.url || '',
         time: props.snapshot.time || '',
         stepsToReproduce: '',
-        currentUser: '',
-        isMasquerading: false,
+        currentUser: props.snapshot.currentUser && props.snapshot.currentUser.name || '',
+        isMasquerading: props.snapshot.isMasquerading,
         consoleErrors: props.snapshot.debugData || '',
         screenshot: props.snapshot.screenshot,
         urgency: Urgency.LOW
-      }
+      },
+      canEditCurrentUser: !props.snapshot.currentUser
     };
 
     this.handleStringChange = this.handleStringChange.bind(this);
@@ -234,29 +236,42 @@ export class Form extends React.Component<FormProps, FormState> {
             placeholder={"1. Went to the vendor page\n2. added some items to the cart\n3. edited the notes\n4. clicked checkout"}
           />
         </div>
+        { this.state.canEditCurrentUser ?
         <div class="form-group">
           <label class="form-group__label">
             Current user:
-            <input
-              class="form-input"
-              type="text"
-              value={this.state.form.currentUser}
-              onChange={this.handleStringChange('currentUser')}
-            />
           </label>
-        </div>
-        <div class="form-group">
           <label class="toggle-input">
+            <span class="toggle-input__label">Masquerading</span>
             <input
               class="toggle-input__input"
               type="checkbox"
               checked={this.state.form.isMasquerading}
               onChange={this.handleBoolChange('isMasquerading')}
             />
-              <span class="toggle-input__toggle"></span>
-              <span class="toggle-input__label">Are you masquerading?</span>
+            <span class="toggle-input__toggle"></span>
           </label>
-        </div>
+          <div>
+            <input
+              class="form-input"
+              type="text"
+              value={this.state.form.currentUser}
+              onChange={this.handleStringChange('currentUser')}
+              placeholder={this.state.form.isMasquerading ? 'Zoe from Ovo' : 'Myself'}
+            />
+          </div>
+        </div> :
+        <div class="form-group">
+          <label class="form-group__label">
+            Current user:
+            <input
+              class="form-input"
+              type="text"
+              disabled={true}
+              value={(this.state.form.isMasquerading ? 'Masquerading as ' : '') + this.state.form.currentUser }
+            />
+          </label>
+        </div> }
         <div class="form-group">
           <label class="form-group__label">
             Console Errors
