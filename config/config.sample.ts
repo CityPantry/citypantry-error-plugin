@@ -5,8 +5,8 @@ export const config = {
   jiraUser: 'user@email.com',
   jiraToken: 'token from https://id.atlassian.com/manage/api-tokens',
   jiraServer: 'https://your-organisation.atlassian.net',
-  projectKey: 'CPD',
-  bugIssueName: 'Bug',
   oauthToken: 'Generate your oauth token',
+  projectKey: 'The project key is the prefix that your stories have e.g. ABC-123 has project key ABC',
+  bugIssueName: 'Most likely "Bug" or similar. ',
   slackChannelUrl: 'https://<org>.slack.com/messages/<channelId>'
 };
