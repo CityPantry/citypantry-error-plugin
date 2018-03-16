@@ -1,4 +1,4 @@
-import { config } from '../config';
+import { config } from '../../config';
 import axios from 'axios';
 
 export class SlackApi {
@@ -13,19 +13,6 @@ export class SlackApi {
     console.log('Posting to slack', data);
 
     await axios(url || `https://hooks.slack.com${config.slackUrl}`, {
-      method: 'post',
-      data
-    });
-  }
-
-  async postToChannel(channel, text): Promise<void> {
-    const data = {
-      channel,
-      username: config.username,
-      text
-    };
-
-    await axios(`https://hooks.slack.com${config.slackUrl}`, {
       method: 'post',
       data
     });

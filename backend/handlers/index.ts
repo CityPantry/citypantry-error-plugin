@@ -1,8 +1,8 @@
-import * as slack from './slack-report';
+import * as reportBug from './report';
 import { HandlerWrapper } from 'serverless-api-handlers';
 
 export function getHandlers(wrapper: HandlerWrapper) {
   return {
-    report: wrapper.wrap(slack.report, { cors: true }),
+    report: wrapper.wrap(reportBug.report, { cors: true }),
   }
 }
