@@ -21,11 +21,13 @@ export interface State {
   metadata: Metadata | null;
   isLoadingSnapshot: boolean;
   snapshot: Snapshot | null;
+  isValidPage: boolean;
 }
 
 export const EMPTY_STATE: State = {
   metadata: null,
   isLoadingSnapshot: false,
-  snapshot: null
+  snapshot: null,
+  isValidPage: false,
 };
 Object.freeze(EMPTY_STATE);

@@ -31,7 +31,7 @@ class BackgroundHandler {
     };
   }
 
-  public async getInitialState(force?: boolean): Promise<{ email: string, name: string }> {
+  public async getInitialState(force?: boolean): Promise<void> {
     const apiResponse = await withAuthToken((token) =>
       axios.get('https://www.googleapis.com/oauth2/v2/userinfo?key=' + config.oauthToken, {
         headers: {
@@ -44,15 +44,20 @@ class BackgroundHandler {
     const email: string = apiResponse.data.email;
     const name: string = apiResponse.data.name;
 
+    const { url } = await this.fetchCurrentTab();
+
+    const isValidUrl = this.isValidUrl(url);
+
     this.updateState({
       ...this.state,
       metadata: {
         email,
         name,
-      }
+      },
+      isLoadingSnapshot: false,
+      snapshot: null,
+      isValidPage: isValidUrl
     });
-
-    return { email, name };
   }
 
   public async takeSnapshot(): Promise<void> {
@@ -63,6 +68,18 @@ class BackgroundHandler {
     });
 
     const { url, windowId, id: tabId } = await this.fetchCurrentTab();
+
+    const isValidUrl = this.isValidUrl(url);
+    if (!isValidUrl) {
+      this.updateState({
+        ...this.state,
+        isLoadingSnapshot: false,
+        snapshot: null,
+        isValidPage: false
+      });
+      return;
+    }
+
     const screenshot = await this.takeScreenshot(windowId);
     const time = this.getTime();
     const reduxData = await this.getReduxState(tabId as number);
@@ -79,7 +96,8 @@ class BackgroundHandler {
         debugData: reduxData || '',
         currentUser,
         isMasquerading
-      }
+      },
+      isValidPage: true
     });
   }
 
@@ -94,6 +112,10 @@ class BackgroundHandler {
       snapshot: null,
       isLoadingSnapshot: false
     });
+  }
+
+  private isValidUrl(url): boolean {
+    return !!(url.match(/^https:\/\/citypantry.com\//) || url.match(/^https?:\/\/[^\/]+\.c8y\.tech\//));
   }
 
   private getTime(): string {
@@ -215,15 +237,6 @@ class BackgroundHandler {
     });
     return cookie && cookie.value || null;
   }
-}
-
-
-function getReduxLogsFromPage(): string {
-  console.log((window as any).__cp_bug_events__);
-  if (!(window as any).__cp_bug_events__) {
-    return '';
-  }
-  return JSON.stringify((window as any).__cp_bug_events__.slice());
 }
 
 const handler = new BackgroundHandler();
