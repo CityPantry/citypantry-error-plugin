@@ -140,7 +140,7 @@ export class Form extends React.Component<FormProps, FormState> {
             type="text"
             value={this.state.form.impact}
             onChange={this.handleStringChange('impact')}
-            placeholder="I can't check out this cart."
+            placeholder="Cannot check out cart"
           />
         </div>
         <div class="form-group">

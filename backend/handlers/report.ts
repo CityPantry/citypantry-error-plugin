@@ -2,63 +2,39 @@ import { HandlerRequest, HandlerResponse } from 'serverless-api-handlers';
 import { slackApi } from '../api/slack.api';
 import { Report } from '../../models';
 import { awsApi } from '../api/aws.api';
-import { BugReport } from '../../models/jira';
-import { jiraApi } from '../api/jira.api';
+import { Bug, jiraApi } from '../api/jira.api';
+import { config } from '../../config';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
   // Shouldn't need to JSON parse this but we can fix later
-  const params = JSON.parse(request.body) as Report;
+  const report = JSON.parse(request.body) as Report;
 
   // SLACK
-  // const screenshot = new Buffer(params.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-  //
-  // const filename = `screenshot-${params.name.replace(/\W/gi, '').toLowerCase()}-${params.time}.png`;
-  // const imageUrl = await awsApi.uploadImage(screenshot, filename);
-  //
-  // console.log('UPLOADED');
-  //
-  // const formattedReport = formatSlackBody(params);
+  const screenshot = new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64');
 
+  const filename = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.png`;
+  const imageUrl = await awsApi.uploadImage(screenshot, filename);
+
+  console.log('Uploaded image');
 
   // JIRA
-  const bug: any = {
-    fields: {
-      // project: {key: 'TEST'},
-      issuetype: {
-        name: 'Bug',
-      },
-      // priority: {
-      //   name: 'Low'
-      // },
-      summary: 'test summary',
-      description: 'test description',
-    }
+  const bug: Bug = {
+    urgency: report.urgency,
+    summary: report.impact,
+    description: createJiraDescription(report, imageUrl)
   };
 
-
   try {
-    await jiraApi.createIssue(bug);
+    const issueKey = await jiraApi.createIssue(bug);
+    const attachments = createSlackAttachments(report, imageUrl, issueKey);
+    await slackApi.post(`New Bug Reported:`, undefined, attachments);
   } catch (error) {
-    console.log("error reporting to JIRA", error);
+    console.log('Upstream error', error);
     return {
       statusCode: 503,
       body: error.body,
     }
   }
-
-  // try {
-  //   const attachment = createSlackAttachment(params, imageUrl);
-  //
-  //   await slackApi
-  //     .post(formattedReport, undefined, [attachment]);
-  // } catch (error) {
-  //   console.log(error);
-  //
-  //   return {
-  //     statusCode: 503,
-  //     body: `Error reporting to Slack ${error.toString()}`,
-  //   }
-  // }
 
   return {
     statusCode: 200,
@@ -66,26 +42,63 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   };
 }
 
-function formatSlackBody(params: Report): string {
-  return `Name: ${params.name}
-Description: ${params.description}
-Urgency: ${params.urgency}
-Impact: ${params.impact}
-Affected People: ${params.affectedPeople}
-URL: ${params.url}
-Time: ${params.time}
-Current user: ${params.currentUser}
-Are you masquerading?: ${params.isMasquerading}
-Steps to reproduce:\n ${params.stepsToReproduce}`;
-}
+function createSlackAttachments(report: Report, imageUrl: string, issueKey: string): any[] {
+  return [{
+    'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
+    'title': `${issueKey}: ${report.impact}`,
+    'title_link': `${config.jiraServer}/browse/${issueKey}`,
+    'text': `*Reporter:* ${report.name}
 
-function createSlackAttachment(params: any, imageUrl: string): any {
-  return {
-    'fallback': `Screenshot uploaded by ${params.name} for ${params.time} at ${imageUrl}`,
-    'title': 'Bug Screenshot',
+*What's Wrong?:*
+${report.description}
+
+*Time:* ${report.time}
+*Affected People:* ${report.affectedPeople}
+*Urgency*: ${report.urgency}
+
+*Steps to Reproduce*:
+_${report.isMasquerading ? 'Logged in' : 'Masquerading'} as ${report.currentUser}_
+${report.url}
+
+${report.stepsToReproduce}
+
+*Issue URL*
+${config.jiraServer}/browse/${issueKey}`,
+    'color': '#FFF200'
+  },{
+    'fallback': `Screenshot uploaded by ${report.name} for ${report.time} at ${imageUrl}`,
+    'title': `Screenshot of ${issueKey}`,
     'title_link': imageUrl,
-    'text': params.description,
     'image_url': imageUrl,
     'color': '#FFF200'
-  };
+  }];
+}
+
+function createJiraDescription(report: Report, screenshotUrl: string): string {
+  return `*Reported By:* ${report.name}
+
+*URL:* ${report.url}
+*Time:* ${report.time}
+
+*What's Wrong:*
+${report.description}
+
+*Impact:*
+${report.impact}
+
+*Affected People:*
+${report.affectedPeople}
+
+*Current User:*
+${report.isMasquerading ? 'Masquerading as ' : ''}${report.currentUser}
+
+*Steps to Reproduce:*
+${report.stepsToReproduce}
+
+*Screenshot:*
+${screenshotUrl}
+
+*Console data:*
+${Buffer.from(report.consoleErrors || '').toString('base64')}
+`;
 }

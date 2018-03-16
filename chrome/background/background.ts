@@ -11,6 +11,8 @@ const _export: {
   background: Background
 } & Window = window as any;
 
+window['axios'] = axios;
+
 class BackgroundHandler {
   private subscriber: any;
   private state: State;
@@ -215,7 +217,7 @@ class BackgroundHandler {
       : response.data.vendor ? 'vendor' :
         'user';
 
-    const fullName = name + (type === 'customer' ? ` (Customer: ${response.data.customer.companyName})`:
+    const fullName = name + (type === 'customer' ? ` (${response.data.customer.companyName ? ('Customer: ' + response.data.customer.companyName) : 'Customer' })`:
         type === 'vendor' ? ` (Vendor)` : ''
     );
 
