@@ -8,5 +8,5 @@ export const config = {
   oauthToken: 'Generate your oauth token',
   projectKey: 'The project key is the prefix that your stories have e.g. ABC-123 has project key ABC',
   bugIssueName: 'Most likely "Bug" or similar. ',
-  slackChannelUrl: 'https://<org>.slack.com/messages/<channelId>'
+  slackChannelId: 'Bug Channel ID'
 };
