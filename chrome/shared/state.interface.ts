@@ -17,11 +17,19 @@ export interface UserSnapshot {
   name: string;
 }
 
+export enum SubmitStatus {
+  INITIAL = "INITIAL",
+  PENDING = "PENDING",
+  SUCCESS = "SUCCESS",
+  FAILURE = "FAILURE",
+}
+
 export interface State {
   metadata: Metadata | null;
   isLoadingSnapshot: boolean;
   snapshot: Snapshot | null;
   isValidPage: boolean;
+  submitStatus: SubmitStatus,
 }
 
 export const EMPTY_STATE: State = {
@@ -29,5 +37,6 @@ export const EMPTY_STATE: State = {
   isLoadingSnapshot: false,
   snapshot: null,
   isValidPage: false,
+  submitStatus: SubmitStatus.INITIAL,
 };
 Object.freeze(EMPTY_STATE);

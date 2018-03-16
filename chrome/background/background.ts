@@ -1,5 +1,5 @@
 import { Background } from '../shared/background.interface';
-import { EMPTY_STATE, State } from '../shared/state.interface';
+import { EMPTY_STATE, State, SubmitStatus } from '../shared/state.interface';
 import axios from 'axios';
 import { withAuthToken } from './auth';
 import { Report } from '../../models';
@@ -58,7 +58,8 @@ class BackgroundHandler {
       },
       isLoadingSnapshot: false,
       snapshot: null,
-      isValidPage: isValidUrl
+      isValidPage: isValidUrl,
+      submitStatus: SubmitStatus.INITIAL,
     });
   }
 
@@ -105,14 +106,30 @@ class BackgroundHandler {
 
   public async sendReport(report: Report): Promise<void> {
     // TODO error handling
-    await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
+    this.updateState({
+      ...this.state,
+      submitStatus: SubmitStatus.PENDING,
+    });
+    try {
+      await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
+      this.updateState({
+        ...this.state,
+        submitStatus: SubmitStatus.SUCCESS,
+      });
+    } catch (e) {
+      this.updateState({
+        ...this.state,
+        submitStatus: SubmitStatus.FAILURE,
+      });
+    }
   }
 
   public reset(): void {
     this.updateState({
       ...this.state,
       snapshot: null,
-      isLoadingSnapshot: false
+      isLoadingSnapshot: false,
+      submitStatus: SubmitStatus.INITIAL,
     });
   }
 

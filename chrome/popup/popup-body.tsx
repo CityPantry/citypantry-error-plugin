@@ -1,6 +1,6 @@
 import * as React from 'preact';
 import { Report } from '../../models';
-import { State } from '../shared/state.interface';
+import { State, SubmitStatus } from '../shared/state.interface';
 import { Form } from './form';
 
 export interface PopupBodyProps {
@@ -12,13 +12,15 @@ export interface PopupBodyProps {
 
 export function PopupBody({ state, takeSnapshot, submitReport, reset }: PopupBodyProps): JSX.Element {
   console.log('Update', state);
-  return !state.metadata ?
-    <div
+  if (!state.metadata) {
+    return <div
       style="padding: 8px;"
-    >Fetching your details...</div> :
-    !state.snapshot ?
-      !state.isLoadingSnapshot ?
-      <div
+    >Fetching your details...</div>
+  }
+
+  if (!state.snapshot) {
+    if (!state.isLoadingSnapshot) {
+      return <div
         style="padding: 8px;"
       >
         <h2>Report a Bug</h2>
@@ -30,17 +32,45 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset }: PopupBod
             class="button button--primary button--fullwidth"
             onClick={takeSnapshot}
             disabled={!state.isValidPage}
-          >Create a bug report</button>
+          >Create a bug report
+          </button>
         </div>
         {!state.isValidPage ? <p class="status-text--red">
           Looks like you're not on a CityPantry.com page... Go to the problem page and try again.
         </p> : null}
-      </div> :
-      <div
+      </div>
+    } else {
+      return <div
         style="padding: 8px; text-align: center"
       >
         <p class="mb-standard">Gathering data...</p>
         <div class="square-spinner"></div>
-      </div> :
-    <Form metadata={state.metadata} snapshot={state.snapshot} onSubmit={submitReport} onReset={reset} />
+      </div>
+    }
+  }
+
+  if (state.submitStatus === SubmitStatus.INITIAL) {
+    return <Form metadata={state.metadata} snapshot={state.snapshot} onSubmit={submitReport} onReset={reset}/>
+  }
+
+  if (state.submitStatus === SubmitStatus.PENDING) {
+    return <div
+    style="padding: 8px; text-align: center"
+      >
+      <p class="mb-standard">Submitting...</p>
+    <div class="square-spinner"></div>
+  </div>
+  }
+
+  return state.submitStatus === SubmitStatus.SUCCESS ?
+    <div style={{padding: "8px"}}>
+      <h2>Success</h2>
+      <button class="button button--primary" onClick={reset}>Report another bug</button>
+    </div>
+    :
+    <div style={{padding: "8px"}}>
+      <h2>An error occurred</h2>
+      <p class="status-text--red mb-standard">Something has gone wrong, please tell the tech team.</p>
+      <button class="button button--primary" onClick={reset}>Try Again</button>
+    </div>
 }
