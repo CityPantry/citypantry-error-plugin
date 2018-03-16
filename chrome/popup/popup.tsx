@@ -3,6 +3,7 @@ import { Background } from '../shared/background.interface';
 import { EMPTY_STATE, State } from '../shared/state.interface';
 import { PopupBody } from './popup-body';
 import { Report } from '../../models';
+import { config } from '../../config';
 
 const getBackground = (): Background => (chrome.extension.getBackgroundPage() as any).background;
 
@@ -18,6 +19,7 @@ export class Popup extends React.Component<any, State> implements React.Componen
     this.submitReport = this.submitReport.bind(this);
     this.takeSnapshot = this.takeSnapshot.bind(this);
     this.reset = this.reset.bind(this);
+    this.openSlack = this.openSlack.bind(this);
   }
 
   public componentDidMount(): void {
@@ -52,6 +54,11 @@ export class Popup extends React.Component<any, State> implements React.Componen
       takeSnapshot={this.takeSnapshot}
       submitReport={this.submitReport}
       reset={this.reset}
+      openSlack={this.openSlack}
     />
+  }
+
+  public openSlack(): void {
+    chrome.tabs.create({ url: `https://slack.com/app_redirect?channel=${config.slackChannelId }` });
   }
 }

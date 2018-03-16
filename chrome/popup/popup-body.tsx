@@ -8,14 +8,15 @@ export interface PopupBodyProps {
   takeSnapshot(): void;
   submitReport(report: Report): void;
   reset(): void;
+  openSlack(): void;
 }
 
-export function PopupBody({ state, takeSnapshot, submitReport, reset }: PopupBodyProps): JSX.Element {
+export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack }: PopupBodyProps): JSX.Element {
   console.log('Update', state);
   if (!state.metadata) {
     return <div
       style="padding: 8px;"
-    >Fetching your details...</div>
+    >Fetching your details...</div>;
   }
 
   if (!state.snapshot) {
@@ -38,19 +39,19 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset }: PopupBod
         {!state.isValidPage ? <p class="status-text--red">
           Looks like you're not on a CityPantry.com page... Go to the problem page and try again.
         </p> : null}
-      </div>
+      </div>;
     } else {
       return <div
         style="padding: 8px; text-align: center"
       >
         <p class="mb-standard">Gathering data...</p>
         <div class="square-spinner"></div>
-      </div>
+      </div>;
     }
   }
 
   if (state.submitStatus === SubmitStatus.INITIAL) {
-    return <Form metadata={state.metadata} snapshot={state.snapshot} onSubmit={submitReport} onReset={reset}/>
+    return <Form metadata={state.metadata} snapshot={state.snapshot} onSubmit={submitReport} onReset={reset}/>;
   }
 
   if (state.submitStatus === SubmitStatus.PENDING) {
@@ -59,18 +60,21 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset }: PopupBod
       >
       <p class="mb-standard">Submitting...</p>
     <div class="square-spinner"></div>
-  </div>
+  </div>;
   }
 
   return state.submitStatus === SubmitStatus.SUCCESS ?
     <div style={{padding: "8px"}}>
       <h2>Success</h2>
-      <button class="button button--primary" onClick={reset}>Report another bug</button>
+      <p class="mb-standard">Thank you for reporting this.</p>
+      <button class="button button--primary" onClick={reset}>Report another bug</button><br />
+      <button class="button button--secondary mt-standard" onClick={openSlack}>Open Slack</button>
     </div>
     :
     <div style={{padding: "8px"}}>
       <h2>An error occurred</h2>
       <p class="status-text--red mb-standard">Something has gone wrong, please tell the tech team.</p>
-      <button class="button button--primary" onClick={reset}>Try Again</button>
-    </div>
+      <button class="button button--primary" onClick={openSlack}>Report in Slack</button>
+      <button class="button button--secondary ml-standard" onClick={reset}>Try Again</button>
+    </div>;
 }
