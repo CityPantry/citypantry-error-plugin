@@ -1,7 +1,7 @@
 {
-  "name": "CP Error Reporting",
+  "name": "City Pantry Error Reporting",
   "short_name": "CP Error Reporting",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "manifest_version": 2,
   "description": "Easily report errors on citypantry.com",
   "homepage_url": "https://slack.com/app_redirect?channel=C0KDSMAMV",

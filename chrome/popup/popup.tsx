@@ -20,6 +20,7 @@ export class Popup extends React.Component<any, State> implements React.Componen
     this.takeSnapshot = this.takeSnapshot.bind(this);
     this.reset = this.reset.bind(this);
     this.openSlack = this.openSlack.bind(this);
+    this.updateForm = this.updateForm.bind(this);
   }
 
   public componentDidMount(): void {
@@ -48,6 +49,10 @@ export class Popup extends React.Component<any, State> implements React.Componen
     getBackground().reset();
   }
 
+  public updateForm(form: Partial<Report>): void {
+    getBackground().updateForm(form);
+  }
+
   public render(): JSX.Element {
     return <PopupBody
       state={this.state}
@@ -55,6 +60,7 @@ export class Popup extends React.Component<any, State> implements React.Componen
       submitReport={this.submitReport}
       reset={this.reset}
       openSlack={this.openSlack}
+      updateForm={this.updateForm}
     />
   }
 

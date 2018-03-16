@@ -3,10 +3,11 @@ import { AxiosError } from 'axios';
 let token: string;
 
 export function getAuthToken(force?: boolean, silent: boolean = false): Promise<string> {
-  console.log('Getting auth token', force);
   if (token && !force) {
     return Promise.resolve(token);
   }
+
+  console.log('Getting auth token', force);
 
   return new Promise((resolve) => {
     chrome.identity.getAuthToken({
@@ -23,9 +24,7 @@ export async function withAuthToken<T>(callback: (token: string) => Promise<T>):
   let numRetries = 0;
   while (true) {
     numRetries++;
-    console.log('Getting token');
     const token = await getAuthToken(numRetries > 0);
-    console.log('Got token', token);
     try {
       return await callback(token);
     } catch (e) {

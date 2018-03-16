@@ -7,4 +7,5 @@ export interface Background {
   takeSnapshot(): void;
   sendReport(report: Report): void;
   reset(): void;
+  updateForm(form: Partial<Report>): void;
 }

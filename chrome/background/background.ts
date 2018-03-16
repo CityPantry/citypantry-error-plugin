@@ -41,14 +41,16 @@ class BackgroundHandler {
         }
       }));
 
-    console.log(apiResponse);
-
     const email: string = apiResponse.data.email;
     const name: string = apiResponse.data.name;
 
     const { url } = await this.fetchCurrentTab();
 
     const isValidUrl = this.isValidUrl(url);
+
+    const now = new Date().getTime();
+    const expiryCutoff = now - 10 * 60 * 1000;
+    const shouldRemoveSnapshot = !this.state.snapshot || this.state.snapshot.lastModified < expiryCutoff;
 
     this.updateState({
       ...this.state,
@@ -57,7 +59,8 @@ class BackgroundHandler {
         name,
       },
       isLoadingSnapshot: false,
-      snapshot: null,
+      snapshot: shouldRemoveSnapshot ? null : this.state.snapshot,
+      form: shouldRemoveSnapshot ? null : this.state.form,
       isValidPage: isValidUrl,
       submitStatus: SubmitStatus.INITIAL,
     });
@@ -78,6 +81,7 @@ class BackgroundHandler {
         ...this.state,
         isLoadingSnapshot: false,
         snapshot: null,
+        form: null,
         isValidPage: false
       });
       return;
@@ -87,12 +91,13 @@ class BackgroundHandler {
     const time = this.getTime();
     const reduxData = await this.getReduxState(tabId as number);
     const { currentUser, isMasquerading } = await this.getCurrentUser(url as string);
-    console.log(currentUser, isMasquerading);
+    const timeCreated = new Date().getTime();
 
     this.updateState({
       ...this.state,
       isLoadingSnapshot: false,
       snapshot: {
+        lastModified: timeCreated,
         url: url || '',
         time,
         screenshot,
@@ -100,6 +105,7 @@ class BackgroundHandler {
         currentUser,
         isMasquerading
       },
+      form: null,
       isValidPage: true
     });
   }
@@ -128,8 +134,20 @@ class BackgroundHandler {
     this.updateState({
       ...this.state,
       snapshot: null,
+      form: null,
       isLoadingSnapshot: false,
       submitStatus: SubmitStatus.INITIAL,
+    });
+  }
+
+  public updateForm(form: Partial<Report>): void {
+    this.updateState({
+      ...this.state,
+      form,
+      snapshot: this.state.snapshot && {
+        ...this.state.snapshot,
+        lastModified: new Date().getTime()
+      }
     });
   }
 
@@ -265,5 +283,6 @@ _export.background = {
   getInitialState: handler.getInitialState.bind(handler),
   takeSnapshot: handler.takeSnapshot.bind(handler),
   sendReport: handler.sendReport.bind(handler),
-  reset: handler.reset.bind(handler)
+  reset: handler.reset.bind(handler),
+  updateForm: handler.updateForm.bind(handler),
 };

@@ -5,8 +5,10 @@ import { Metadata, Snapshot } from '../shared/state.interface';
 export interface FormProps {
   metadata: Metadata;
   snapshot: Snapshot;
+  form: Partial<Report> | null;
   onSubmit(report: Report): void;
   onReset(): void;
+  onUpdate(form: Partial<Report>): void;
 }
 
 interface FormState {
@@ -20,7 +22,7 @@ export class Form extends React.Component<FormProps, FormState> {
 
   constructor(props: FormProps) {
     super(props);
-    const form = {
+    const form = props.form || {
       name: props.metadata.name || '',
       description: '',
       impact: '',
@@ -79,6 +81,7 @@ export class Form extends React.Component<FormProps, FormState> {
         invalidFields: this.getInvalidFields(newForm)
       }
     });
+    this.props.onUpdate(this.state.form);
   }
 
   handleSubmit(event) {
@@ -132,7 +135,10 @@ export class Form extends React.Component<FormProps, FormState> {
         style="padding: 8px;"
         onSubmit={this.handleSubmit}
       >
-        <h2>Submit a Bug Report</h2>
+        <div class="d-flex align-items-center mb-standard">
+          <h2 class="mb-0">Submit a Bug Report</h2>
+          <button class="ml-auto button button--secondary" onClick={this.props.onReset}>Reset</button>
+        </div>
         <div class="form-group">
           Your Name: {this.state.form.name}
         </div>

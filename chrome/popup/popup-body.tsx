@@ -9,9 +9,10 @@ export interface PopupBodyProps {
   submitReport(report: Report): void;
   reset(): void;
   openSlack(): void;
+  updateForm(form: Partial<Report>): void;
 }
 
-export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack }: PopupBodyProps): JSX.Element {
+export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack, updateForm }: PopupBodyProps): JSX.Element {
   console.log('Update', state);
   if (!state.metadata) {
     return <div
@@ -51,7 +52,14 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack 
   }
 
   if (state.submitStatus === SubmitStatus.INITIAL) {
-    return <Form metadata={state.metadata} snapshot={state.snapshot} onSubmit={submitReport} onReset={reset}/>;
+    return <Form
+      metadata={state.metadata}
+      snapshot={state.snapshot}
+      form={state.form}
+      onSubmit={submitReport}
+      onReset={reset}
+      onUpdate={updateForm}
+    />;
   }
 
   if (state.submitStatus === SubmitStatus.PENDING) {

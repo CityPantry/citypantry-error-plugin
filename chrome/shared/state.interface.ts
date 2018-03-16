@@ -1,9 +1,12 @@
+import { Report } from '../../models';
+
 export interface Metadata {
   name: string;
   email: string;
 }
 
 export interface Snapshot {
+  lastModified: number;
   url: string;
   time: string;
   screenshot: string;
@@ -29,7 +32,8 @@ export interface State {
   isLoadingSnapshot: boolean;
   snapshot: Snapshot | null;
   isValidPage: boolean;
-  submitStatus: SubmitStatus,
+  submitStatus: SubmitStatus;
+  form: Partial<Report> | null;
 }
 
 export const EMPTY_STATE: State = {
@@ -38,5 +42,6 @@ export const EMPTY_STATE: State = {
   snapshot: null,
   isValidPage: false,
   submitStatus: SubmitStatus.INITIAL,
+  form: null,
 };
 Object.freeze(EMPTY_STATE);
