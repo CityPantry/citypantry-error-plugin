@@ -44,8 +44,11 @@ export function createDebugEventManager(initialEvents: DebugEvent[]) {
       }
 
       return returnList;
+    },
+    get length(): number {
+      return events.length;
     }
-  }
+  };
 }
 
 export function replaceConsole(): { name: string, args: any[] }[] {
@@ -82,11 +85,8 @@ export function replaceConsole(): { name: string, args: any[] }[] {
 
   // If we're in the content script setup, we won't be able to access the window variables.
   // Re-inject ourselves so we can do it properly.
-  console.log('LOADING REDUX TRACKING SCRIPT...');
 
   if (!document.getElementById('cp-bug-content-script')) {
-    console.log('Step1...');
-
     injectScript( chrome.extension.getURL('/js/content.js'), 'body');
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -99,16 +99,13 @@ export function replaceConsole(): { name: string, args: any[] }[] {
       }
     });
   } else {
-    console.log('Step2...');
     const currentState: DebugEvent[] = Array.prototype.slice.call(window.__cp_bug_events__ || []);
 
     const manager = createDebugEventManager(currentState);
     window.__cp_bug_events__ = manager;
 
-    console.log('Replacing console');
     const log = replaceConsole();
 
-    console.log('Adding event listener 1');
     window.document.addEventListener('get-redux-state-slice', () => {
       const area = document.createElement('textarea');
       area.style.display = 'none';
@@ -119,16 +116,13 @@ export function replaceConsole(): { name: string, args: any[] }[] {
       });
       document.body.appendChild(area);
     });
-    console.log('Adding event listener 2');
     window.document.addEventListener('cleanup-redux-state-slice', () => {
       const area = document.getElementById('__cp-redux-state-slice') as HTMLTextAreaElement;
       if (area) {
         area.parentElement && area.parentElement.removeChild(area);
       }
     });
-    console.log('Adding event listener 3');
-
-    console.info('Loaded Debug Event Manager!');
+    console.info('[CP Error Plugin] Loaded Debug Event Manager!');
   }
 
 })();

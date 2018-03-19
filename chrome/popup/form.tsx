@@ -184,7 +184,8 @@ export class Form extends React.Component<FormProps, FormState> {
             Impact
           </label>
           <p class="form-group__sub-label">
-            What impact is the bug having on you?
+            What is it you can't do because of this?<br />
+            Or what can you do but shouldn't be able to?
           </p>
           <input
             className={this.getClassName('impact')}
