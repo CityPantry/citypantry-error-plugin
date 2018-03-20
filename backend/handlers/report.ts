@@ -12,16 +12,23 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   // SLACK
   const screenshot = new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64');
 
-  const filename = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.png`;
-  const imageUrl = await awsApi.uploadImage(screenshot, filename);
+  const imageName = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.png`;
+  const errorFileName = `console-errors-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.json`;
+  let dataUrl: string | null = null;
+  if (report.consoleErrors && report.consoleErrors.length > 1000) {
+    console.log(`consoleErrors is too long (${report.consoleErrors.length}, uploading`);
+    dataUrl = await awsApi.uploadText(report.consoleErrors, errorFileName);
+    console.log(`Uploaded consoleErrors to ${dataUrl}`);
+  }
 
-  console.log('Uploaded image');
+  const imageUrl = await awsApi.uploadImage(screenshot, imageName);
+  console.log(`Uploaded image to ${imageUrl}`);
 
   // JIRA
   const bug: Bug = {
     urgency: report.urgency,
     summary: report.impact,
-    description: createJiraDescription(report, imageUrl)
+    description: createJiraDescription(report, imageUrl, dataUrl)
   };
 
   try {
@@ -74,7 +81,7 @@ ${config.jiraServer}/browse/${issueKey}`,
   }];
 }
 
-function createJiraDescription(report: Report, screenshotUrl: string): string {
+function createJiraDescription(report: Report, screenshotUrl: string, dataUrl: string | null): string {
   return `*Reported By:* ${report.name}
 
 *URL:* ${report.url}
@@ -99,6 +106,6 @@ ${report.stepsToReproduce}
 ${screenshotUrl}
 
 *Console data:*
-${Buffer.from(report.consoleErrors || '').toString('base64')}
+${dataUrl ? dataUrl : Buffer.from(report.consoleErrors || '').toString('base64')}
 `;
 }

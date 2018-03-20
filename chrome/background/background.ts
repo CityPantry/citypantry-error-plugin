@@ -152,7 +152,7 @@ class BackgroundHandler {
   }
 
   private isValidUrl(url): boolean {
-    return !!(url.match(/^https:\/\/citypantry.com\//) || url.match(/^https?:\/\/[^\/]+\.c8y\.tech\//));
+    return !!(url.match(/^https:\/\/([^/]+\.)?citypantry.com\//) || url.match(/^https?:\/\/[^\/]+\.c8y\.tech\//));
   }
 
   private getTime(): string {
