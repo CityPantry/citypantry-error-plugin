@@ -1,6 +1,6 @@
 import { HandlerRequest, HandlerResponse } from 'serverless-api-handlers';
 import { slackApi } from '../api/slack.api';
-import { Report } from '../../models';
+import { Report, Urgency } from '../../models';
 import { awsApi } from '../api/aws.api';
 import { Bug, jiraApi } from '../api/jira.api';
 import { config } from '../../config';
@@ -49,19 +49,27 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   };
 }
 
+function getUrgencyIcon(urgency: Urgency): string {
+  switch (urgency) {
+    case Urgency.IMMEDIATE: return ' :fire';
+    case Urgency.HIGH: return ' :exclamation:';
+    default: return '';
+  }
+}
+
 function createSlackAttachments(report: Report, imageUrl: string, issueKey: string): any[] {
   return [{
     'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
     'title': `${issueKey}: ${report.impact}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
     'text': `*Reporter:* ${report.name}
+*Urgency*: ${report.urgency}${getUrgencyIcon(report.urgency)}
 
 *What's Wrong?*
-${report.description}
+${report.description}$
 
 *Time:* ${report.time}
 *Affected People:* ${report.affectedPeople}
-*Urgency*: ${report.urgency}
 
 *Steps to Reproduce*:
 _${report.isMasquerading ? 'Logged in' : 'Masquerading'} as ${report.currentUser}_
