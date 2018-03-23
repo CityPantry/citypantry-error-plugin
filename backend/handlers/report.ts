@@ -51,7 +51,7 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
 
 function getUrgencyIcon(urgency: Urgency): string {
   switch (urgency) {
-    case Urgency.IMMEDIATE: return ' :fire';
+    case Urgency.IMMEDIATE: return ' :fire:';
     case Urgency.HIGH: return ' :exclamation:';
     default: return '';
   }
