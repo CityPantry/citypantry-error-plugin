@@ -7,7 +7,16 @@ import { config } from '../../config';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
   // Shouldn't need to JSON parse this but we can fix later
-  const report = JSON.parse(request.body) as Report;
+  const parsedReport = JSON.parse(request.body) as Report;
+  const report = {
+    ...parsedReport,
+    name: trim(parsedReport.name),
+    description: trim(parsedReport.description),
+    impact: trim(parsedReport.impact),
+    affectedPeople: trim(parsedReport.affectedPeople),
+    stepsToReproduce: trim(parsedReport.stepsToReproduce),
+    currentUser: trim(parsedReport.currentUser)
+  } as Report;
 
   // SLACK
   const screenshot = new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64');
@@ -47,6 +56,10 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
     statusCode: 200,
     body: '"Invoked successfully!"',
   };
+}
+
+function trim(text: string): string {
+  return (text || '').trim();
 }
 
 function getUrgencyIcon(urgency: Urgency): string {
