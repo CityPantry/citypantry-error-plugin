@@ -66,7 +66,7 @@ function createSlackAttachments(report: Report, imageUrl: string, issueKey: stri
 *Urgency*: ${report.urgency}${getUrgencyIcon(report.urgency)}
 
 *What's Wrong?*
-${report.description}$
+${report.description}
 
 *Time:* ${report.time}
 *Affected People:* ${report.affectedPeople}
