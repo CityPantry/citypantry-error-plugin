@@ -210,7 +210,7 @@ class BackgroundHandler {
     const host = domainMatch[1];
     const protocol = domainMatch[2];
     const server = domainMatch[3];
-    const apiUrl = `${protocol}://api.${server}/users/get-authenticated-user`
+    const apiUrl = `${protocol}://api.${server}/users/get-authenticated-user`;
 
     const [
       token,
@@ -242,25 +242,31 @@ class BackgroundHandler {
       headers['citypantry-staffmasqueradertoken'] = staffMasqueraderToken;
     }
 
-    const response = await axios.get(apiUrl, { headers });
+    try {
+      const response = await axios.get(apiUrl, { headers });
 
-    console.log(response.data);
+      const name = response.data.user.name;
+      const isMasquerading = !!response.data.sudo;
+      const type = response.data.customer ? 'customer'
+        : response.data.vendor ? 'vendor' :
+          'user';
 
-    const name = response.data.user.name;
-    const isMasquerading = !!response.data.sudo;
-    const type = response.data.customer ? 'customer'
-      : response.data.vendor ? 'vendor' :
-        'user';
+      const fullName = name + (type === 'customer' ? ` (${response.data.customer.companyName ? ('Customer: ' + response.data.customer.companyName) : 'Customer' })`:
+          type === 'vendor' ? ` (Vendor)` : ''
+      );
 
-    const fullName = name + (type === 'customer' ? ` (${response.data.customer.companyName ? ('Customer: ' + response.data.customer.companyName) : 'Customer' })`:
-        type === 'vendor' ? ` (Vendor)` : ''
-    );
-
-    return {
-      currentUser: {
-        type, name: fullName
-      },
-      isMasquerading
+      return {
+        currentUser: {
+          type, name: fullName
+        },
+        isMasquerading
+      }
+    } catch (e) {
+      // Not logged in returns 401
+      return {
+        currentUser: null,
+        isMasquerading: false
+      };
     }
   }
 
