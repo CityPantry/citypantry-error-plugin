@@ -16,5 +16,8 @@
     "jsx": "react",
     "skipLibCheck": true,
     "strict": true
-  }
+  },
+  "exclude": [
+    "./parser"
+  ]
 }

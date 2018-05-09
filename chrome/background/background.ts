@@ -188,7 +188,7 @@ class BackgroundHandler {
 
   private getReduxState(tabId: number): Promise<string> {
     return new Promise((resolve) => {
-      chrome.tabs.sendMessage(tabId, 'get-redux-state-slice', (response) => {
+      chrome.tabs.sendMessage(tabId, 'get-cp-debug-data', (response) => {
         resolve(response);
       });
     });

@@ -1,41 +1,41 @@
 import { replaceConsole } from './console-tracking';
 import { DebugEvent } from '../shared/debug-event.interface';
-import { createDebugEventManager } from './redux-tracking';
+import { createReduxEventManager } from './redux-tracking';
 import { ConsoleEvent } from '../shared/console-event.interface';
 import { XhrEvent } from '../shared/xhr-event.interface';
+import { interceptXhrEvents } from './xhr-tracking';
 
 declare const window: Window & {
-  __cp_bug_events__: {
+  __cp_bug_events__: { // DO NOT RENAME THIS, IT IS HARDCODED IN THE ANGULAR PROJECT
     push(event: DebugEvent): void;
     slice(start?: number, end?: number): void;
   };
-  __cp_xhr_events__: XhrEvent[];
-  console: ConsoleEvent[];
 };
 
 const INIT_MESSAGE = '[CP Error Plugin] Loaded Debug Manager!';
 
 export class DebugManager {
-
-  private log
+  private console: ConsoleEvent[] = [];
+  private xhr: XhrEvent[] = [];
+  private redux: DebugEvent[] = [];
 
   public init(): void {
     const currentState: DebugEvent[] = Array.prototype.slice.call(window.__cp_bug_events__ || []);
+    const redux = createReduxEventManager(currentState);
+    window.__cp_bug_events__ = redux;
+    this.redux = redux as DebugEvent[];
 
-    const events = createDebugEventManager(currentState);
-    window.__cp_bug_events__ = events;
-
-    const log = replaceConsole(INIT_MESSAGE);
+    this.console = replaceConsole(INIT_MESSAGE);
+    this.xhr = interceptXhrEvents();
 
     console.info(INIT_MESSAGE);
   }
 
   public getLog(): string {
-
     return JSON.stringify({
-      redux: events.slice(),
-      console: log,
-      xhr: window.__cp_xhr_events__
+      redux: this.redux.slice(),
+      console: this.console,
+      xhr: this.xhr
     });
   }
 }
