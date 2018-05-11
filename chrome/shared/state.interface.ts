@@ -16,7 +16,7 @@ export interface Snapshot {
 }
 
 export interface UserSnapshot {
-  type: 'user' | 'customer' | 'vendor';
+  type: 'user' | 'customer' | 'vendor' | 'not_logged_in';
   name: string;
 }
 

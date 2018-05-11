@@ -1,5 +1,5 @@
 import { Background } from '../shared/background.interface';
-import { EMPTY_STATE, State, SubmitStatus } from '../shared/state.interface';
+import { EMPTY_STATE, State, SubmitStatus, UserSnapshot } from '../shared/state.interface';
 import axios from 'axios';
 import { withAuthToken } from './auth';
 import { Report } from '../../models';
@@ -194,10 +194,7 @@ class BackgroundHandler {
     });
   }
 
-  private async getCurrentUser(url: string): Promise<{ currentUser: {
-    name: string;
-    type: 'user' | 'customer' | 'vendor'
-  } | null, isMasquerading: boolean }> {
+  private async getCurrentUser(url: string): Promise<{ currentUser: UserSnapshot | null, isMasquerading: boolean }> {
     const domainMatch = url.match(/(^(https?):\/\/(?:www\.)?(.*?))\//i);
     if (!domainMatch) {
       console.log('Could not parse URL:', url);
@@ -228,7 +225,10 @@ class BackgroundHandler {
 
     if (!token) {
       return {
-        currentUser: null,
+        currentUser: {
+          name: 'Not logged in',
+          type: 'not_logged_in'
+        },
         isMasquerading: false
       };
     }
@@ -257,16 +257,27 @@ class BackgroundHandler {
 
       return {
         currentUser: {
-          type, name: fullName
+          type,
+          name: fullName
         },
         isMasquerading
       }
     } catch (e) {
       // Not logged in returns 401
-      return {
-        currentUser: null,
-        isMasquerading: false
-      };
+      if (e.response && e.response.status === 401) {
+        return {
+          currentUser: {
+            name: 'Not logged in',
+            type: 'not_logged_in'
+          },
+          isMasquerading: false
+        };
+      } else {
+        return {
+          currentUser: null,
+          isMasquerading: false
+        };
+      }
     }
   }
 

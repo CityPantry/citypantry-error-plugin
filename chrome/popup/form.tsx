@@ -294,7 +294,7 @@ export class Form extends React.Component<FormProps, FormState> {
             Current user:
           </label>
           <label class="toggle-input">
-            <span class="toggle-input__label">Masquerading</span>
+            <span class="toggle-input__label">I am masquerading &nbsp;</span>
             <input
               class="toggle-input__input"
               type="checkbox"
