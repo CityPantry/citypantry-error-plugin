@@ -5,6 +5,11 @@ export function interceptXhrEvents(): XhrEvent[] {
 
   // store the native send()
   const oldSend = XMLHttpRequest.prototype.send;
+  const oldOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method) {
+    (this as any).method = method;
+    oldOpen.apply(this, arguments);
+  };
   // override the native send()
   XMLHttpRequest.prototype.send = function() {
     const oldOnReadyStateChange = this.onreadystatechange ? this.onreadystatechange.bind(this) : () => {};
@@ -17,6 +22,7 @@ export function interceptXhrEvents(): XhrEvent[] {
         logged = true;
         log.push({
           url: this.responseURL,
+          method: (this as any).method,
           statusCode: this.status,
           startTime: started.toISOString(),
           endTime: new Date().toISOString()
