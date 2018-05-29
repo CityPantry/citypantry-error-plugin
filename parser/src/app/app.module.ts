@@ -9,6 +9,7 @@ import { ObjectLineComponent } from './object-line/object-line.component';
 import { ArrayLineComponent } from './array-line/array-line.component';
 import { PrimitiveLineComponent } from './primitive-line/primitive-line.component';
 import { LineComponent } from './line/line.component';
+import { ReduxStateComponent } from './redux-state/redux-state.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { LineComponent } from './line/line.component';
     ObjectLineComponent,
     ArrayLineComponent,
     PrimitiveLineComponent,
-    LineComponent
+    LineComponent,
+    ReduxStateComponent
   ],
   imports: [
     BrowserModule,

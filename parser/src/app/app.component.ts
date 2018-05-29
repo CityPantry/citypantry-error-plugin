@@ -15,7 +15,17 @@ import { HttpClient } from '@angular/common/http';
     </form>
     <div *ngIf="isLoading">Loading...</div>
     <!--<code *ngIf="data"><pre>{{ data | json }}</pre></code>-->
-    <app-object-line *ngIf="data" [trailingComma]="false" name="root" [value]="data"></app-object-line>
+    <ng-container *ngIf="data">
+      <h2>Console Logs</h2>
+      <app-array-line *ngIf="data.console?.length" trailingComma="false" name="console" [value]="data.console"></app-array-line>
+      <p *ngIf="!data.console?.length">None available</p>
+      
+      <h2>Network Requests</h2>
+      <app-object-line [trailingComma]="false" name="xhr" [value]="data.xhr"></app-object-line>
+      
+      <h2>Redux</h2>
+      <app-redux-state [reduxState]="data.redux"></app-redux-state>
+    </ng-container>
   `,
   styles: []
 })
