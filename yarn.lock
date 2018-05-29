@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@citypantry/pattern-library@https://648472b5c2fd5690e71d33782371c26701484cfe@github.com/CityPantry/pattern-library/tarball/v1.28.9":
-  version "1.28.9"
-  resolved "https://648472b5c2fd5690e71d33782371c26701484cfe@github.com/CityPantry/pattern-library/tarball/v1.28.9#b2631d2d73532cea5f0bf82ee0259f72ef4f65db"
-
 "@serverless/fdk@^0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@serverless/fdk/-/fdk-0.5.1.tgz#9d420568bfb291d73f8a8a9b35ba68a974f7d0b7"
