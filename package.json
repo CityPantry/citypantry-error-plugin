@@ -2,7 +2,7 @@
   "name": "citypantry-error-plugin",
   "author": "Lewis Wilcock <lewis.wilcock@gmail.com>, Paul Lessing <paul@paullessing.com>",
   "license": "MIT",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Error reporting chrome plugin for citypantry.com",
   "main": "handler.js",
   "scripts": {
