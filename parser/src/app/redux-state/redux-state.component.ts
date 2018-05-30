@@ -25,7 +25,7 @@ interface ActionEntry {
       [value]="lastState.state"
     ></app-object-line>
     
-    <h3>Actions <button (click)="expanded = !expanded">Toggle</button></h3>
+    <h3>Actions (reverse order) <button (click)="expanded = !expanded">Toggle</button></h3>
     
     <ng-container *ngFor="let action of actions">
       <div style="margin-left: 0.5rem; margin-bottom: 0.5rem">

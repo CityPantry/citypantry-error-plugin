@@ -24,7 +24,8 @@ import { HttpClient } from '@angular/common/http';
       <app-object-line [trailingComma]="false" name="xhr" [value]="data.xhr"></app-object-line>
       
       <h2>Redux</h2>
-      <app-redux-state [reduxState]="data.redux"></app-redux-state>
+      <app-redux-state *ngIf="hasReduxData(); else noRedux" [reduxState]="data.redux"></app-redux-state>
+      <ng-template #noRedux><code>- none -</code></ng-template>
     </ng-container>
   `,
   styles: []
@@ -37,6 +38,10 @@ export class AppComponent {
   constructor(
     private http: HttpClient
   ) {}
+
+  public hasReduxData(): boolean {
+    return this.data.redux && this.data.redux.filter(x => !!x).length;
+  }
 
   public onSubmit(url): void {
     this.isLoading = true;
