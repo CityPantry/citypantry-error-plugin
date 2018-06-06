@@ -3,7 +3,7 @@ import { Background } from '../shared/background.interface';
 import { EMPTY_STATE, State } from '../shared/state.interface';
 import { PopupBody } from './popup-body';
 import { Report } from '../../models';
-import { config } from '../../config';
+import { chromeConfig } from '../../config/config.chrome';
 
 const getBackground = (): Background => (chrome.extension.getBackgroundPage() as any).background;
 
@@ -65,6 +65,6 @@ export class Popup extends React.Component<any, State> implements React.Componen
   }
 
   public openSlack(): void {
-    chrome.tabs.create({ url: `https://slack.com/app_redirect?channel=${config.slackChannelId }` });
+    chrome.tabs.create({ url: `https://slack.com/app_redirect?channel=${chromeConfig.slackChannelId }` });
   }
 }
