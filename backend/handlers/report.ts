@@ -87,7 +87,7 @@ ${report.description}
 *Affected People:* ${report.affectedPeople}
 
 *Steps to Reproduce*:
-_${report.isMasquerading ? 'Logged in' : 'Masquerading'} as ${report.currentUser}_
+_${report.isMasquerading ? 'Masquerading' : 'Logged in'} as ${report.currentUser}_
 ${report.url}
 
 ${report.stepsToReproduce}

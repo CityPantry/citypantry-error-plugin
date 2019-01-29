@@ -13,6 +13,7 @@ export interface Snapshot {
   debugData: string;
   currentUser: UserSnapshot | null;
   isMasquerading: boolean;
+  isCityPantryUrl: boolean;
 }
 
 export interface UserSnapshot {

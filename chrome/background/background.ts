@@ -81,7 +81,15 @@ class BackgroundHandler {
     const timeCreated = new Date().getTime();
     const screenshot = await this.takeScreenshot(windowId);
     const reduxData = isCityPantryUrl ? await this.getReduxState(tabId as number) : '';
-    const { currentUser, isMasquerading } = isCityPantryUrl ? await this.getCurrentUser(url as string) : { currentUser: null, isMasquerading: false };
+    const { currentUser, isMasquerading } = isCityPantryUrl ?
+      await this.getCurrentUser(url as string) :
+      {
+        currentUser: {
+          name: this.state.metadata && this.state.metadata.name || '',
+          type: 'not_logged_in' as 'not_logged_in',
+        },
+        isMasquerading: false,
+      };
 
     this.updateState({
       ...this.state,
@@ -93,7 +101,8 @@ class BackgroundHandler {
         screenshot,
         debugData: reduxData || '',
         currentUser,
-        isMasquerading
+        isMasquerading,
+        isCityPantryUrl,
       },
       form: null,
       isCityPantryUrl

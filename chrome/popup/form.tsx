@@ -40,7 +40,7 @@ export class Form extends React.Component<FormProps, FormState> {
     };
     this.state = {
       form,
-      canEditCurrentUser: !props.snapshot.currentUser,
+      canEditCurrentUser: !props.snapshot.currentUser || !props.snapshot.isCityPantryUrl,
       submitted: false,
       invalidFields: this.getInvalidFields(form)
     };
