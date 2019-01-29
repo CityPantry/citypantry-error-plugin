@@ -24,8 +24,8 @@ export class Form extends React.Component<FormProps, FormState> {
     super(props);
     const form = props.form || {
       name: props.metadata.name || '',
+      summary: '',
       description: '',
-      impact: '',
       affectedPeople: '',
       url: props.snapshot.url || '',
       time: props.snapshot.time || '',
@@ -165,10 +165,27 @@ export class Form extends React.Component<FormProps, FormState> {
 
         <div class="form-group">
           <label class="form-group__label">
-            What's Wrong?
+            Summary: What's Wrong?
           </label>
           <p class="form-group__sub-label">
-            Write a short summary of what should happen vs. what actually happens.
+            In a few words, state what the problem is.
+          </p>
+          <input
+            className={this.getClassName('summary')}
+            type="text"
+            value={this.state.form.summary}
+            maxLength={80}
+            onChange={this.handleStringChange('summary')}
+            placeholder="Error when checking out cart"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-group__label">
+            Details
+          </label>
+          <p class="form-group__sub-label">
+            Give us any more information you have on what the problem is.
           </p>
           <textarea
             className={this.getClassName('description')}
@@ -177,22 +194,6 @@ export class Form extends React.Component<FormProps, FormState> {
             onChange={this.handleStringChange('description')}
             placeholder="I'm trying to check out a cart for tomorrow. When I click the checkout button it should take me to the next page but nothing happens."
             rows={4}
-          />
-        </div>
-        <div class="form-group">
-          <label class="form-group__label">
-            Impact
-          </label>
-          <p class="form-group__sub-label">
-            What is it you can't do because of this?<br />
-            Or what can you do but shouldn't be able to?
-          </p>
-          <input
-            className={this.getClassName('impact')}
-            type="text"
-            value={this.state.form.impact}
-            onChange={this.handleStringChange('impact')}
-            placeholder="Cannot check out cart"
           />
         </div>
         <div class="form-group">

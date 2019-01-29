@@ -5,11 +5,11 @@ export function replaceConsole(initialMessage): ConsoleEvent[] {
   Object.assign(window, {
     console: new Proxy(window.console, {
       get: (target, name) => {
-        if (['log', 'warn', 'error', 'info', 'debug'].indexOf(`${name}`) >= 0) {
+        if (['log', 'warn', 'error', 'info', 'debug'].indexOf(String(name)) >= 0) {
           return (...args) => {
             if (args[0] !== initialMessage) {
               log.push({
-                name: `${name}`,
+                name: String(name),
                 args,
                 time: new Date().toISOString()
               });

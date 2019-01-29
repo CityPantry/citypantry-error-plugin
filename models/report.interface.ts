@@ -2,8 +2,8 @@ import { Urgency } from './urgency.enum';
 
 export interface Report {
   name: string;
+  summary: string;
   description: string;
-  impact: string;
   affectedPeople: string;
   url: string;
   time: string;

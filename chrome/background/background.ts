@@ -11,7 +11,8 @@ const _export: {
   background: Background
 } & Window = window as any;
 
-window['axios'] = axios;
+// Debug
+// window['axios'] = axios;
 
 class BackgroundHandler {
   private subscriber: any;

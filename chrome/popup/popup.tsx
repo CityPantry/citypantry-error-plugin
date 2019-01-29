@@ -7,7 +7,7 @@ import { chromeConfig } from '../../config/config.chrome';
 
 const getBackground = (): Background => (chrome.extension.getBackgroundPage() as any).background;
 
-export class Popup extends React.Component<any, State> implements React.ComponentLifecycle<any, any> {
+export class Popup extends React.Component<any, State> {
 
   private unsubscribe: () => void;
 

@@ -11,8 +11,8 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   const report = {
     ...parsedReport,
     name: trim(parsedReport.name),
+    summary: trim(parsedReport.summary),
     description: trim(parsedReport.description),
-    impact: trim(parsedReport.impact),
     affectedPeople: trim(parsedReport.affectedPeople),
     stepsToReproduce: trim(parsedReport.stepsToReproduce),
     currentUser: trim(parsedReport.currentUser)
@@ -36,7 +36,7 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   // JIRA
   const bug: Bug = {
     urgency: report.urgency,
-    summary: report.impact,
+    summary: report.summary,
     description: createJiraDescription(report, imageUrl, dataUrl)
   };
 
@@ -73,7 +73,7 @@ function getUrgencyIcon(urgency: Urgency): string {
 function createSlackAttachments(report: Report, imageUrl: string, issueKey: string): any[] {
   return [{
     'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
-    'title': `${issueKey}: ${report.impact}`,
+    'title': `${issueKey}: ${report.summary}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
     'text': `*Reporter:* ${report.name}
 *Urgency*: ${report.urgency}${getUrgencyIcon(report.urgency)}
@@ -109,10 +109,10 @@ function createJiraDescription(report: Report, screenshotUrl: string, dataUrl: s
 *Time:* ${report.time}
 
 *What's Wrong:*
-${report.description}
+${report.summary}
 
-*Impact:*
-${report.impact}
+*Details:*
+${report.description}
 
 *Affected People:*
 ${report.affectedPeople}
