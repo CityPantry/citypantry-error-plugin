@@ -18,6 +18,8 @@ interface FormState {
   invalidFields: string[];
 }
 
+type PropertyNamesOfType<U, T> = { [K in keyof U]: U[K] extends T ? K : never }[keyof U];
+
 export class Form extends React.Component<FormProps, FormState> {
 
   constructor(props: FormProps) {
@@ -46,9 +48,10 @@ export class Form extends React.Component<FormProps, FormState> {
     this.handleStringChange = this.handleStringChange.bind(this);
     this.handleBoolChange = this.handleBoolChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.removeScreenshot = this.removeScreenshot.bind(this);
   }
 
-  handleStringChange(prop: keyof Report) {
+  handleStringChange(prop: PropertyNamesOfType<Report, string>) {
     return (event) => {
       this.updateForm({
         [prop]: event.target.value
@@ -56,7 +59,7 @@ export class Form extends React.Component<FormProps, FormState> {
     }
   }
 
-  handleBoolChange(prop: keyof Report) {
+  handleBoolChange(prop: PropertyNamesOfType<Report, boolean>) {
     return (event) => {
       this.updateForm({
         [prop]: !!event.target.checked
@@ -67,6 +70,12 @@ export class Form extends React.Component<FormProps, FormState> {
   handleChoiceChange(prop: keyof Report, value: any) {
     return () => this.updateForm({
       [prop]: value
+    });
+  }
+
+  removeScreenshot() {
+    this.updateForm({
+      screenshot: null
     });
   }
 
@@ -339,14 +348,25 @@ export class Form extends React.Component<FormProps, FormState> {
             rows={5}
           />
         </div>
+        { this.state.form.screenshot ?
         <div class="form-group">
-          <label class="form-group__label">
-            Screenshot
-          </label>
-          <div style="width: 100%;">
+          <div class="d-flex">
+            <label class="form-group__label d-flex">
+              Screenshot
+            </label>
+
+            <span class="form-choice d-inline-block ml-auto">
+              <button
+                type="button"
+                class="button-link"
+                onClick={this.removeScreenshot}
+              >Remove</button>
+            </span>
+          </div>
+          <div style="width: 100%">
             <img src={this.state.form.screenshot}/>
           </div>
-        </div>
+        </div> : null }
         { this.state.submitted && this.state.invalidFields.length ?
           <p style="color: #e93131" className="mb-standard">
             Please fill out all fields.

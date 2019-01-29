@@ -7,11 +7,11 @@ import { config } from '../../config';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
   // Shouldn't need to JSON parse this but we can fix later
-  const parsedReport = JSON.parse(request.body) as Report;
+  const parsedReport = JSON.parse(request.body) as Report & { impact: string }; // TODO: Remove impact after 06/02/2019
   const report = {
     ...parsedReport,
     name: trim(parsedReport.name),
-    summary: trim(parsedReport.summary),
+    summary: trim(parsedReport.impact || parsedReport.summary),
     description: trim(parsedReport.description),
     affectedPeople: trim(parsedReport.affectedPeople),
     stepsToReproduce: trim(parsedReport.stepsToReproduce),
@@ -19,7 +19,7 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   } as Report;
 
   // SLACK
-  const screenshot = new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+  const screenshot = report.screenshot ? new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64') : null;
 
   const imageName = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.png`;
   const errorFileName = `console-errors-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.json`;
@@ -30,8 +30,10 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
     console.log(`Uploaded consoleErrors to ${dataUrl}`);
   }
 
-  const imageUrl = await awsApi.uploadImage(screenshot, imageName);
-  console.log(`Uploaded image to ${imageUrl}`);
+  const imageUrl = screenshot ? await awsApi.uploadImage(screenshot, imageName) : null;
+  if (imageUrl) {
+    console.log(`Uploaded image to ${imageUrl}`);
+  }
 
   // JIRA
   const bug: Bug = {
@@ -70,8 +72,8 @@ function getUrgencyIcon(urgency: Urgency): string {
   }
 }
 
-function createSlackAttachments(report: Report, imageUrl: string, issueKey: string): any[] {
-  return [{
+function createSlackAttachments(report: Report, imageUrl: string | null, issueKey: string): any[] {
+  const attachments: any[] = [{
     'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
     'title': `${issueKey}: ${report.summary}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
@@ -93,16 +95,20 @@ ${report.stepsToReproduce}
 *Issue URL*
 ${config.jiraServer}/browse/${issueKey}`,
     'color': '#FFF200'
-  },{
-    'fallback': `Screenshot uploaded by ${report.name} for ${report.time} at ${imageUrl}`,
-    'title': `Screenshot of ${issueKey}`,
-    'title_link': imageUrl,
-    'image_url': imageUrl,
-    'color': '#FFF200'
   }];
+  if (imageUrl) {
+    attachments.push({
+      'fallback': `Screenshot uploaded by ${report.name} for ${report.time} at ${imageUrl}`,
+      'title': `Screenshot of ${issueKey}`,
+      'title_link': imageUrl,
+      'image_url': imageUrl,
+      'color': '#FFF200'
+    })
+  }
+  return attachments;
 }
 
-function createJiraDescription(report: Report, screenshotUrl: string, dataUrl: string | null): string {
+function createJiraDescription(report: Report, screenshotUrl: string | null, dataUrl: string | null): string {
   return `*Reported By:* ${report.name}
 
 *URL:* ${report.url}
@@ -124,7 +130,7 @@ ${report.isMasquerading ? 'Masquerading as ' : ''}${report.currentUser}
 ${report.stepsToReproduce}
 
 *Screenshot:*
-${screenshotUrl}
+${screenshotUrl || 'No Screenshot'}
 
 *Console data:*
 ${dataUrl ? dataUrl : Buffer.from(report.consoleErrors || '').toString('base64')}

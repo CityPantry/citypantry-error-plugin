@@ -33,12 +33,12 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack,
           <button
             class="button button--primary button--fullwidth"
             onClick={takeSnapshot}
-            disabled={!state.isValidPage}
           >Create a bug report
           </button>
         </div>
-        {!state.isValidPage ? <p class="status-text--red">
-          Looks like you're not on a citypantry.com page... Go to the problem page and try again.
+        {!state.isCityPantryUrl ? <p class="status-text--red">
+          Looks like you're not on a citypantry.com page.<br/>
+          Please be careful when creating a bug report to not share sensitive information via the URL or screenshot.
         </p> : null}
       </div>;
     } else {

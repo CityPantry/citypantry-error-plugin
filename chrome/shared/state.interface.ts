@@ -31,7 +31,7 @@ export interface State {
   metadata: Metadata | null;
   isLoadingSnapshot: boolean;
   snapshot: Snapshot | null;
-  isValidPage: boolean;
+  isCityPantryUrl: boolean;
   submitStatus: SubmitStatus;
   form: Partial<Report> | null;
 }
@@ -40,7 +40,7 @@ export const EMPTY_STATE: State = {
   metadata: null,
   isLoadingSnapshot: false,
   snapshot: null,
-  isValidPage: false,
+  isCityPantryUrl: false,
   submitStatus: SubmitStatus.INITIAL,
   form: null,
 };

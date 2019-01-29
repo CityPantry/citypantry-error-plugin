@@ -47,7 +47,7 @@ class BackgroundHandler {
 
     const { url } = await this.fetchCurrentTab();
 
-    const isValidUrl = this.isValidUrl(url);
+    const isCityPantryUrl = this.isCityPantryUrl(url);
 
     const now = new Date().getTime();
     const expiryCutoff = now - 10 * 60 * 1000;
@@ -62,7 +62,7 @@ class BackgroundHandler {
       isLoadingSnapshot: false,
       snapshot: shouldRemoveSnapshot ? null : this.state.snapshot,
       form: shouldRemoveSnapshot ? null : this.state.form,
-      isValidPage: isValidUrl,
+      isCityPantryUrl: isCityPantryUrl,
       submitStatus: SubmitStatus.INITIAL,
     });
   }
@@ -76,23 +76,12 @@ class BackgroundHandler {
 
     const { url, windowId, id: tabId } = await this.fetchCurrentTab();
 
-    const isValidUrl = this.isValidUrl(url);
-    if (!isValidUrl) {
-      this.updateState({
-        ...this.state,
-        isLoadingSnapshot: false,
-        snapshot: null,
-        form: null,
-        isValidPage: false
-      });
-      return;
-    }
-
-    const screenshot = await this.takeScreenshot(windowId);
+    const isCityPantryUrl = this.isCityPantryUrl(url);
     const time = this.getTime();
-    const reduxData = await this.getReduxState(tabId as number);
-    const { currentUser, isMasquerading } = await this.getCurrentUser(url as string);
     const timeCreated = new Date().getTime();
+    const screenshot = await this.takeScreenshot(windowId);
+    const reduxData = isCityPantryUrl ? await this.getReduxState(tabId as number) : '';
+    const { currentUser, isMasquerading } = isCityPantryUrl ? await this.getCurrentUser(url as string) : { currentUser: null, isMasquerading: false };
 
     this.updateState({
       ...this.state,
@@ -107,7 +96,7 @@ class BackgroundHandler {
         isMasquerading
       },
       form: null,
-      isValidPage: true
+      isCityPantryUrl
     });
   }
 
@@ -152,7 +141,7 @@ class BackgroundHandler {
     });
   }
 
-  private isValidUrl(url): boolean {
+  private isCityPantryUrl(url): boolean {
     return !!(url.match(/^https:\/\/([^/]+\.)?citypantry.com\//) || url.match(/^https?:\/\/[^\/]+\.c8y\.tech\//));
   }
 

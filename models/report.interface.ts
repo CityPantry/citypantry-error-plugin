@@ -8,7 +8,7 @@ export interface Report {
   url: string;
   time: string;
   stepsToReproduce: string;
-  screenshot: string;
+  screenshot: string | null;
   currentUser: string;
   isMasquerading: boolean;
   consoleErrors: string;
