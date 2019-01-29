@@ -183,7 +183,7 @@ export class Form extends React.Component<FormProps, FormState> {
             className={this.getClassName('summary')}
             type="text"
             value={this.state.form.summary}
-            maxLength={80}
+            maxLength={60}
             onChange={this.handleStringChange('summary')}
             placeholder="Error when checking out cart"
           />
@@ -304,7 +304,7 @@ export class Form extends React.Component<FormProps, FormState> {
             Current user:
           </label>
           <label class="toggle-input">
-            <span class="toggle-input__label">I am masquerading &nbsp;</span>
+            <span class="toggle-input__label">I am masquerading </span>
             <input
               class="toggle-input__input"
               type="checkbox"
