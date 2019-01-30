@@ -183,7 +183,7 @@ export class Form extends React.Component<FormProps, FormState> {
             className={this.getClassName('summary')}
             type="text"
             value={this.state.form.summary}
-            maxLength={60}
+            maxLength={70}
             onChange={this.handleStringChange('summary')}
             placeholder="Error when checking out cart"
           />
