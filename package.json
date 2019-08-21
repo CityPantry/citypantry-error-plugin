@@ -6,14 +6,14 @@
   "description": "Error reporting chrome plugin for citypantry.com",
   "main": "handler.js",
   "scripts": {
-    "serve": "concurrently \"yarn serve-background\" \"yarn serve-popup\" \"yarn serve-content\" -n \"backg,popup,conte\"",
-    "serve-background": "webpack --config webpack.background.config.js --watch --progress --mode development",
-    "serve-popup": "webpack --config webpack.popup.config.js --watch --progress --mode development",
-    "serve-content": "webpack --config webpack.content.config.js --watch --progress --mode development",
-    "build": "yarn build-background && yarn build-popup && yarn build-content",
-    "build-background": "webpack --config webpack.background.config.js -p --progress",
-    "build-popup": "webpack --config webpack.popup.config.js -p --progress",
-    "build-content": "webpack --config webpack.content.config.js -p --progress",
+    "serve": "concurrently \"yarn serve:background\" \"yarn serve:popup\" \"yarn serve:content\" -n \"backg,popup,conte\"",
+    "serve:background": "webpack --config webpack.background.config.js --watch --progress --mode development",
+    "serve:popup": "webpack --config webpack.popup.config.js --watch --progress --mode development",
+    "serve:content": "webpack --config webpack.content.config.js --watch --progress --mode development",
+    "build": "yarn build:background && yarn build:popup && yarn build:content",
+    "build:background": "webpack --config webpack.background.config.js -p --progress",
+    "build:popup": "webpack --config webpack.popup.config.js -p --progress",
+    "build:content": "webpack --config webpack.content.config.js -p --progress",
     "deploy": "sls deploy -f report"
   },
   "dependencies": {
