@@ -1,6 +1,6 @@
 import { config } from '../../config';
 import axios from 'axios';
-import { Urgency } from '../../models';
+import { IncidentSize } from '../../models';
 
 export const API_PATH = config.jiraServer + '/rest/api/2';
 const auth = {
@@ -11,13 +11,13 @@ const auth = {
 export interface Bug {
   summary: string;
   description: string;
-  urgency: Urgency;
+  incidentSize: IncidentSize;
 }
 
 export class JiraApi {
   public async createIssue(bug: Bug): Promise<string> {
 
-    const priority = this.getPriority(bug.urgency);
+    const priority = this.getPriority();
 
     const fields = {
       project: {
@@ -42,13 +42,8 @@ export class JiraApi {
     return data.key;
   }
 
-  private getPriority(urgency: Urgency): string {
-    switch (urgency) {
-      case Urgency.LOW: return '5'; // Lowest
-      case Urgency.MEDIUM: return '3'; // Medium
-      case Urgency.HIGH: return '2'; // High
-      case Urgency.IMMEDIATE: return '1'; // Highest
-    }
+  private getPriority(): string {
+    return '3'; // Medium, as bugs are prioritised manually
   }
 }
 

@@ -1,5 +1,5 @@
 import * as React from 'preact';
-import { Report, Urgency } from '../../models';
+import { IncidentSize, Report, toHumanString } from '../../models';
 import { Metadata, Snapshot } from '../shared/state.interface';
 
 export interface FormProps {
@@ -29,6 +29,7 @@ export class Form extends React.Component<FormProps, FormState> {
       summary: '',
       description: '',
       affectedPeople: '',
+      incidentSize: IncidentSize.STAFF_ONLY,
       url: props.snapshot.url || '',
       time: props.snapshot.time || '',
       stepsToReproduce: '',
@@ -36,7 +37,6 @@ export class Form extends React.Component<FormProps, FormState> {
       isMasquerading: props.snapshot.isMasquerading,
       consoleErrors: props.snapshot.debugData || '',
       screenshot: props.snapshot.screenshot,
-      urgency: Urgency.LOW
     };
     this.state = {
       form,
@@ -132,7 +132,7 @@ export class Form extends React.Component<FormProps, FormState> {
     }
     return !!`${value || ''}`.trim();
   }
-  
+
   getClassName(key: keyof Report): string {
     return 'form-input' + (this.isValid(key) ? '' : ' form-input--error');
   }
@@ -222,50 +222,50 @@ export class Form extends React.Component<FormProps, FormState> {
         </div>
         <div class="form-group">
           <label class="form-group__label">
-            Urgency
+            Incident Size
           </label>
           <p class="form-group__sub-label">
-            How badly is this affecting your work?
+            How many people are affected?
           </p>
-          <label class="form-choice">
+          <label class="form-choice mb-small">
             <input
               class="form-choice__input"
               type="radio"
-              name="urgency"
-              checked={this.state.form.urgency === Urgency.LOW}
-              onChange={this.handleChoiceChange('urgency', Urgency.LOW)}
+              name="incidentSize"
+              checked={this.state.form.incidentSize === IncidentSize.STAFF_ONLY}
+              onChange={this.handleChoiceChange('incidentSize', IncidentSize.STAFF_ONLY)}
             />
-            <span class="form-choice__label">This is annoying but it's not stopping me from doing my job</span>
+            <span class="form-choice__label">{toHumanString(IncidentSize.STAFF_ONLY)}</span>
           </label>
           <label class="form-choice">
             <input
               class="form-choice__input"
               type="radio"
-              name="urgency"
-              checked={this.state.form.urgency === Urgency.MEDIUM}
-              onChange={this.handleChoiceChange('urgency', Urgency.MEDIUM)}
+              name="incidentSize"
+              checked={this.state.form.incidentSize === IncidentSize.SMALL}
+              onChange={this.handleChoiceChange('incidentSize', IncidentSize.SMALL)}
             />
-            <span class="form-choice__label">I can't do something I need to do in the next week</span>
+            <span class="form-choice__label">{toHumanString(IncidentSize.SMALL)}</span>
           </label>
           <label class="form-choice">
             <input
               class="form-choice__input"
               type="radio"
-              name="urgency"
-              checked={this.state.form.urgency === Urgency.HIGH}
-              onChange={this.handleChoiceChange('urgency', Urgency.HIGH)}
+              name="incidentSize"
+              checked={this.state.form.incidentSize === IncidentSize.MEDIUM}
+              onChange={this.handleChoiceChange('incidentSize', IncidentSize.MEDIUM)}
             />
-            <span class="form-choice__label">I can't do something I need to do by end of day</span>
+            <span class="form-choice__label">{toHumanString(IncidentSize.MEDIUM)}</span>
           </label>
           <label class="form-choice">
             <input
               class="form-choice__input"
               type="radio"
-              name="urgency"
-              checked={this.state.form.urgency === Urgency.IMMEDIATE}
-              onChange={this.handleChoiceChange('urgency', Urgency.IMMEDIATE)}
+              name="incidentSize"
+              checked={this.state.form.incidentSize === IncidentSize.LARGE}
+              onChange={this.handleChoiceChange('incidentSize', IncidentSize.LARGE)}
             />
-            <span class="form-choice__label">I can't do something that I need right now</span>
+            <span class="form-choice__label">{toHumanString(IncidentSize.LARGE)}</span>
           </label>
         </div>
         <div class="form-group">

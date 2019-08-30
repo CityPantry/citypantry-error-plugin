@@ -1,10 +1,11 @@
-import { Urgency } from './urgency.enum';
+import { IncidentSize } from './incident-size.enum';
 
 export interface Report {
   name: string;
   summary: string;
   description: string;
   affectedPeople: string;
+  incidentSize: IncidentSize;
   url: string;
   time: string;
   stepsToReproduce: string;
@@ -12,5 +13,4 @@ export interface Report {
   currentUser: string;
   isMasquerading: boolean;
   consoleErrors: string;
-  urgency: Urgency;
 }

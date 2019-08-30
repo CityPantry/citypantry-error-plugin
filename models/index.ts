@@ -1,2 +1,2 @@
 export * from './report.interface';
-export * from './urgency.enum';
+export * from './incident-size.enum';
