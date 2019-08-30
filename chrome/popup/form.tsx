@@ -1,6 +1,7 @@
 import * as React from 'preact';
 import { IncidentSize, Report, toHumanString } from '../../models';
 import { Metadata, Snapshot } from '../shared/state.interface';
+import { generateRandomAffectedPeople } from './affected-people';
 
 export interface FormProps {
   metadata: Metadata;
@@ -217,7 +218,7 @@ export class Form extends React.Component<FormProps, FormState> {
             type="text"
             value={this.state.form.affectedPeople}
             onChange={this.handleStringChange('affectedPeople')}
-            placeholder="Customers and account managers"
+            placeholder={generateRandomAffectedPeople().join(', ')}
           />
         </div>
         <div class="form-group">
