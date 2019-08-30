@@ -1,4 +1,4 @@
-# citypantry-error-plugin
+# citypantry-error-extension
 Error Handling plugin for CityPantry.com
 
 ## Setup
@@ -27,3 +27,12 @@ This will run a build-and-watch task for serving the `background.js`, `popup.js`
 You need to then go to chrome://extensions, enable developer mode, and click "load unpacked".
 
 Point it at the `chrome/dist` directory to load the plugin.
+
+## Chrome extension structure
+This chrome extension consists of three files:
+1. `Background`: responsible for persisting state and communication with the backend.
+    It's a singleton that runs all the time in the background.
+2. `Popup`: contains the react frontend that appears in a popup when the extension icon is clicked.
+    A new instance of it is created every time the popup is opened.
+3. `Content`: a script that injects itself to CityPantry website pages to pass specific data to the extension.
+    The data passed is needed by the extension but it cannot otherwise access (e.g. console data).
