@@ -11,5 +11,5 @@ export function sample<T>(array: T[]): T {
 }
 
 export function generateRandomNumber(min: number, max: number): number {
-  return sample(range(min, max));
+  return min + Math.floor(Math.random() * (max - min + 1));
 }
