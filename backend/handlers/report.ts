@@ -1,9 +1,10 @@
 import { HandlerRequest, HandlerResponse } from 'serverless-api-handlers';
-import { slackApi } from '../api/slack.api';
-import { Report, Urgency } from '../../models';
+import * as uuid from 'uuid/v4';
+import { config } from '../../config';
+import { IncidentSize, Report, toHumanString } from '../../models';
 import { awsApi } from '../api/aws.api';
 import { Bug, jiraApi } from '../api/jira.api';
-import { config } from '../../config';
+import { slackApi } from '../api/slack.api';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
   // Shouldn't need to JSON parse this but we can fix later
@@ -21,8 +22,9 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
   // SLACK
   const screenshot = report.screenshot ? new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64') : null;
 
-  const imageName = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.png`;
-  const errorFileName = `console-errors-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}.json`;
+  const reportUuid = uuid(); // used in filenames so that they are not guessable by the public
+  const imageName = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}-${reportUuid}.png`;
+  const errorFileName = `console-errors-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}-${reportUuid}.json`;
   let dataUrl: string | null = null;
   if (report.consoleErrors && report.consoleErrors.length > 1000) {
     console.log(`consoleErrors is too long (${report.consoleErrors.length}, uploading`);
@@ -37,7 +39,7 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
 
   // JIRA
   const bug: Bug = {
-    urgency: report.urgency,
+    incidentSize: report.incidentSize,
     summary: report.summary,
     description: createJiraDescription(report, imageUrl, dataUrl)
   };
@@ -64,10 +66,10 @@ function trim(text: string): string {
   return (text || '').trim();
 }
 
-function getUrgencyIcon(urgency: Urgency): string {
-  switch (urgency) {
-    case Urgency.IMMEDIATE: return ' :fire:';
-    case Urgency.HIGH: return ' :exclamation:';
+function getUrgencyIcon(incidentSize: IncidentSize): string {
+  switch (incidentSize) {
+    case IncidentSize.LARGE: return ' :fire:';
+    case IncidentSize.MEDIUM: return ' :exclamation:';
     default: return '';
   }
 }
@@ -78,7 +80,7 @@ function createSlackAttachments(report: Report, imageUrl: string | null, issueKe
     'title': `${issueKey}: ${report.summary}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
     'text': `*Reporter:* ${report.name}
-*Urgency*: ${report.urgency}${getUrgencyIcon(report.urgency)}
+*Incident Size*: ${toHumanString(report.incidentSize)}${getUrgencyIcon(report.incidentSize)}
 
 *What's Wrong?*
 ${report.description}
@@ -122,6 +124,9 @@ ${report.description}
 
 *Affected People:*
 ${report.affectedPeople}
+
+*Number of Affected People:*
+${toHumanString(report.incidentSize)}
 
 *Current User:*
 ${report.isMasquerading ? 'Masquerading as ' : ''}${report.currentUser}

@@ -21,17 +21,19 @@
     "axios": "^0.18.0",
     "pify": "^3.0.0",
     "preact": "^8.4.2",
-    "serverless-api-handlers": "paullessing/serverless-api-handlers"
+    "serverless-api-handlers": "paullessing/serverless-api-handlers",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.60",
+    "@types/uuid": "^3.4.5",
     "concurrently": "^3.5.1",
     "serverless": "^1.50.0",
     "serverless-webpack": "^5.1.0",
     "style-loader": "^0.20.3",
     "ts-loader": "4",
     "typescript": "^3.2.4",
-    "webpack": "^4.1.1",
+    "webpack": "^4.39.3",
     "webpack-cli": "^2.0.12"
   }
 }
