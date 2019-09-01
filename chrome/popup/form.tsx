@@ -17,6 +17,7 @@ interface FormState {
   canEditCurrentUser;
   submitted: boolean;
   invalidFields: string[];
+  affectedPeoplePlaceholder: string;
 }
 
 type PropertyNamesOfType<U, T> = { [K in keyof U]: U[K] extends T ? K : never }[keyof U];
@@ -43,7 +44,8 @@ export class Form extends React.Component<FormProps, FormState> {
       form,
       canEditCurrentUser: !props.snapshot.currentUser || !props.snapshot.isCityPantryUrl,
       submitted: false,
-      invalidFields: this.getInvalidFields(form)
+      invalidFields: this.getInvalidFields(form),
+      affectedPeoplePlaceholder: generateRandomAffectedPeople().join(', '),
     };
 
     this.handleStringChange = this.handleStringChange.bind(this);
@@ -218,7 +220,7 @@ export class Form extends React.Component<FormProps, FormState> {
             type="text"
             value={this.state.form.affectedPeople}
             onChange={this.handleStringChange('affectedPeople')}
-            placeholder={generateRandomAffectedPeople().join(', ')}
+            placeholder={this.state.affectedPeoplePlaceholder}
           />
         </div>
         <div class="form-group">
