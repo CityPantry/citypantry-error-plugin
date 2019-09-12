@@ -66,21 +66,13 @@ function trim(text: string): string {
   return (text || '').trim();
 }
 
-function getUrgencyIcon(incidentSize: IncidentSize): string {
-  switch (incidentSize) {
-    case IncidentSize.LARGE: return ' :fire:';
-    case IncidentSize.MEDIUM: return ' :exclamation:';
-    default: return '';
-  }
-}
-
 function createSlackAttachments(report: Report, imageUrl: string | null, issueKey: string): any[] {
   const attachments: any[] = [{
     'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
     'title': `${issueKey}: ${report.summary}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
     'text': `*Reporter:* ${report.name}
-*Incident Size*: ${toHumanString(report.incidentSize)}${getUrgencyIcon(report.incidentSize)}
+*Incident Size*: ${toHumanString(report.incidentSize)}
 
 *What's Wrong?*
 ${report.description}
