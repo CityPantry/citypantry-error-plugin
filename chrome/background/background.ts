@@ -151,7 +151,9 @@ class BackgroundHandler {
   }
 
   private isCityPantryUrl(url): boolean {
-    return !!(url.match(/^https:\/\/([^/]+\.)?citypantry.com\//) || url.match(/^https?:\/\/[^\/]+\.c8y\.tech\//));
+    const cityPantryUrls = /^https?:\/\/([a-z0-9-]+\.)*(c8y\.tech|citypantry\.com|cptesting\.dev|cpstaging\.dev|citypantry-preview\.com)($|\/)/i;
+
+    return !!url.match(cityPantryUrls);
   }
 
   private getTime(): string {
