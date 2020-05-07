@@ -4,7 +4,8 @@ export function replaceConsole(initialMessage): ConsoleEvent[] {
   const log: ConsoleEvent[] = [];
   Object.assign(window, {
     console: new Proxy(window.console, {
-      get: (target, name) => {
+      get: function (target, name) {
+        const originalMethod = target[name];
         if (['log', 'warn', 'error', 'info', 'debug'].indexOf(String(name)) >= 0) {
           return (...args) => {
             if (args[0] !== initialMessage) {
@@ -17,10 +18,10 @@ export function replaceConsole(initialMessage): ConsoleEvent[] {
                 log.splice(0, log.length - 40);
               }
             }
-            return target[name](...args);
+            return originalMethod.apply(this, args);
           }
         } else {
-          return target[name];
+          return originalMethod;
         }
       }
     })
