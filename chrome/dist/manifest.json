@@ -21,12 +21,18 @@
         "https://citypantry.com/*",
         "https://*.citypantry.com/",
         "https://*.citypantry.com/*",
+        "https://*.cpstaging.dev/",
+        "https://*.cpstaging.dev/*",
+        "https://*.cptesting.dev/",
+        "https://*.cptesting.dev/*",
+        "https://*.citypantry-preview.com/",
+        "https://*.citypantry-preview.com/*",
         "https://*.c8y.tech/",
         "https://*.c8y.tech/*",
         "http://*.c8y.tech/",
         "http://*.c8y.tech/*",
-        "http://www.local.c8y.tech/",
-        "http://www.local.c8y.tech/*"
+        "http://*.local.c8y.tech/",
+        "http://*.local.c8y.tech/*"
       ],
       "js": ["js/content.js"]
     }
