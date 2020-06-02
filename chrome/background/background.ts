@@ -85,7 +85,8 @@ class BackgroundHandler {
       await this.getCurrentUser(url as string) :
       {
         currentUser: {
-          name: this.state.metadata && this.state.metadata.name || '',
+          name: this.state.metadata?.name || '',
+          simpleName: '',
           type: 'not_logged_in' as 'not_logged_in',
         },
         isMasquerading: false,
@@ -225,6 +226,7 @@ class BackgroundHandler {
       return {
         currentUser: {
           name: 'Not logged in',
+          simpleName: '',
           type: 'not_logged_in'
         },
         isMasquerading: false
@@ -252,16 +254,18 @@ class BackgroundHandler {
       return {
         currentUser: {
           type,
-          name: fullName
+          name: fullName,
+          simpleName: name,
         },
         isMasquerading
       }
     } catch (e) {
       // Not logged in returns 401
-      if (e.response && e.response.status === 401) {
+      if (e.response?.status === 401) {
         return {
           currentUser: {
             name: 'Not logged in',
+            simpleName: '',
             type: 'not_logged_in'
           },
           isMasquerading: false
@@ -283,7 +287,7 @@ class BackgroundHandler {
         name
       }, resolve);
     });
-    return cookie && cookie.value || null;
+    return cookie?.value || null;
   }
 }
 

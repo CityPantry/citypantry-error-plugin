@@ -19,6 +19,7 @@ export interface Snapshot {
 export interface UserSnapshot {
   type: 'user' | 'customer' | 'vendor' | 'not_logged_in';
   name: string;
+  simpleName: string | ''; // Can be '' if not logged in
 }
 
 export enum SubmitStatus {
