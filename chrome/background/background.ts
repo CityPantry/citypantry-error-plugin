@@ -248,7 +248,7 @@ class BackgroundHandler {
           'user';
 
       const fullName = name + (type === 'customer' ? ` (${response.data.customer.companyName ? ('Customer: ' + response.data.customer.companyName) : 'Customer' })`:
-          type === 'vendor' ? ` (Vendor)` : ''
+          type === 'vendor' ? ` (Vendor: ${response.data.vendor.name})` : ''
       );
 
       return {
