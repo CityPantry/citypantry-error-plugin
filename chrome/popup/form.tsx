@@ -30,12 +30,12 @@ export class Form extends React.Component<FormProps, FormState> {
       name: props.metadata.name || '',
       summary: '',
       description: '',
-      affectedPeople: '',
+      affectedPeople: props.snapshot?.currentUser?.simpleName || '',
       incidentSize: IncidentSize.STAFF_ONLY,
       url: props.snapshot.url || '',
       time: props.snapshot.time || '',
       stepsToReproduce: '',
-      currentUser: props.snapshot.currentUser && props.snapshot.currentUser.name || '',
+      currentUser: props.snapshot.currentUser?.name || '',
       isMasquerading: props.snapshot.isMasquerading,
       consoleErrors: props.snapshot.debugData || '',
       screenshot: props.snapshot.screenshot,
@@ -213,7 +213,7 @@ export class Form extends React.Component<FormProps, FormState> {
             Affected People
           </label>
           <p class="form-group__sub-label">
-            Who is affected by this bug?
+            Who is affected by this bug? Please provide customer, vendor or user names.
           </p>
           <input
             className={this.getClassName('affectedPeople')}

@@ -2,7 +2,7 @@
   "name": "citypantry-error-plugin",
   "author": "Lewis Wilcock <lewis.wilcock@gmail.com>, Paul Lessing <paul@paullessing.com>",
   "license": "MIT",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Error reporting chrome plugin for citypantry.com",
   "main": "handler.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "serverless-webpack": "^5.1.0",
     "style-loader": "^0.20.3",
     "ts-loader": "4",
-    "typescript": "^3.2.4",
+    "typescript": "^3.9.3",
     "webpack": "^4.39.3",
     "webpack-cli": "^2.0.12"
   }

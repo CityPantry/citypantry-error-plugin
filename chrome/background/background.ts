@@ -85,7 +85,8 @@ class BackgroundHandler {
       await this.getCurrentUser(url as string) :
       {
         currentUser: {
-          name: this.state.metadata && this.state.metadata.name || '',
+          name: this.state.metadata?.name || '',
+          simpleName: '',
           type: 'not_logged_in' as 'not_logged_in',
         },
         isMasquerading: false,
@@ -110,13 +111,14 @@ class BackgroundHandler {
   }
 
   public async sendReport(report: Report): Promise<void> {
-    // TODO error handling
     this.updateState({
       ...this.state,
       submitStatus: SubmitStatus.PENDING,
     });
     try {
+      console.info('Submitting report:', report);
       await axios.post('https://ingfo0ccaa.execute-api.eu-west-2.amazonaws.com/dev/report', report);
+
       this.updateState({
         ...this.state,
         submitStatus: SubmitStatus.SUCCESS,
@@ -213,13 +215,9 @@ class BackgroundHandler {
     const [
       token,
       userId,
-      staffMasqueraderToken,
-      staffMasqueraderId
     ] = await Promise.all([
       this.getCookie(host, 'token'),
       this.getCookie(host, 'userId'),
-      this.getCookie(host, 'staffMasqueraderToken'),
-      this.getCookie(host, 'staffMasqueraderId'),
     ]);
 
     console.log('Got tokens?', token, userId);
@@ -228,6 +226,7 @@ class BackgroundHandler {
       return {
         currentUser: {
           name: 'Not logged in',
+          simpleName: '',
           type: 'not_logged_in'
         },
         isMasquerading: false
@@ -238,10 +237,6 @@ class BackgroundHandler {
       'citypantry-authtoken': token,
       'citypantry-userid': userId
     };
-    if (staffMasqueraderId && staffMasqueraderToken) {
-      headers['citypantry-staffmasqueraderid'] = staffMasqueraderId;
-      headers['citypantry-staffmasqueradertoken'] = staffMasqueraderToken;
-    }
 
     try {
       const response = await axios.get(apiUrl, { headers });
@@ -253,22 +248,24 @@ class BackgroundHandler {
           'user';
 
       const fullName = name + (type === 'customer' ? ` (${response.data.customer.companyName ? ('Customer: ' + response.data.customer.companyName) : 'Customer' })`:
-          type === 'vendor' ? ` (Vendor)` : ''
+          type === 'vendor' ? ` (Vendor: ${response.data.vendor.name})` : ''
       );
 
       return {
         currentUser: {
           type,
-          name: fullName
+          name: fullName,
+          simpleName: name,
         },
         isMasquerading
       }
     } catch (e) {
       // Not logged in returns 401
-      if (e.response && e.response.status === 401) {
+      if (e.response?.status === 401) {
         return {
           currentUser: {
             name: 'Not logged in',
+            simpleName: '',
             type: 'not_logged_in'
           },
           isMasquerading: false
@@ -290,7 +287,7 @@ class BackgroundHandler {
         name
       }, resolve);
     });
-    return cookie && cookie.value || null;
+    return cookie?.value || null;
   }
 }
 
