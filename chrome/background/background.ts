@@ -210,39 +210,25 @@ class BackgroundHandler {
     const host = domainMatch[1];
     const protocol = domainMatch[2];
     const server = domainMatch[3];
-    const apiUrl = `${protocol}://api.${server}/users/get-authenticated-user`;
+    const apiUrl = `${protocol}://api.${server}/users/me/profile`;
 
     const [
-      token,
       userId,
     ] = await Promise.all([
-      this.getCookie(host, 'token'),
       this.getCookie(host, 'userId'),
     ]);
 
-    console.log('Got tokens?', token, userId);
-
-    if (!token) {
-      return {
-        currentUser: {
-          name: 'Not logged in',
-          simpleName: '',
-          type: 'not_logged_in'
-        },
-        isMasquerading: false
-      };
-    }
+    console.log('Got userId?', userId);
 
     const headers = {
-      'citypantry-authtoken': token,
       'citypantry-userid': userId
     };
 
     try {
       const response = await axios.get(apiUrl, { headers });
 
-      const name = response.data.user.name;
-      const isMasquerading = !!response.data.sudo;
+      const name = response.data.name;
+      const isMasquerading = !!response.data.isSudo;
       const type = response.data.customer ? 'customer'
         : response.data.vendor ? 'vendor' :
           'user';
@@ -260,8 +246,8 @@ class BackgroundHandler {
         isMasquerading
       }
     } catch (e) {
-      // Not logged in returns 401
-      if (e.response?.status === 401) {
+      // Not logged in returns 401. Expired auth return 403.
+      if (e.response?.status === 401 || e.response?.status === 403) {
         return {
           currentUser: {
             name: 'Not logged in',
