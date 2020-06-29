@@ -8,7 +8,17 @@ import { slackApi } from '../api/slack.api';
 
 export async function report(request: HandlerRequest): Promise<HandlerResponse> {
   // Shouldn't need to JSON parse this but we can fix later
-  const parsedReport = JSON.parse(request.body) as Report & { impact: string }; // TODO: Remove impact after 06/02/2019
+  let body = request.body;
+  if (typeof body !== 'object') {
+    try {
+      body = JSON.parse(body);
+    } catch (e) {
+      console.log('Failed to JSON parse:', body);
+      throw e;
+    }
+  }
+
+  const parsedReport = body as Report & { impact: string }; // TODO: Remove impact after 06/02/2019
   const report = {
     ...parsedReport,
     name: trim(parsedReport.name),
