@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.209.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "pify": "^3.0.0",
     "preact": "^8.4.2",
     "serverless-api-handlers": "paullessing/serverless-api-handlers",
