@@ -61,7 +61,20 @@ const serverlessConfiguration: AWS = {
           }
         },
       ]
-    }
+    },
+    webhook: {
+      handler: 'backend/handlers/webhook.main',
+      timeout: 30,
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'webhook',
+            cors: true,
+          }
+        },
+      ]
+    },
   }
 }
 

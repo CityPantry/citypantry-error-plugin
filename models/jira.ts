@@ -1,5 +1,3 @@
-type UNKNOWN = any;
-
 export interface ApiObject {
   self: string; // "https://citypantry.atlassian.net/rest/api/2/issuetype/1";
 }
@@ -9,7 +7,7 @@ export type IssueKey = string;
 export interface JiraCommentEvent {
   timestamp: number; // Milliseconds e.g. 1518873292317
   // https://developer.atlassian.com/server/jira/platform/webhooks/
-  webhookEvent: 'comment_deleted' | 'comment_created' | 'comment_updated' | UNKNOWN; // TODO
+  webhookEvent: 'comment_deleted' | 'comment_created' | 'comment_updated' | any; // TODO
   comment: Comment;
   issue: SimpleIssue;
 }
@@ -21,8 +19,8 @@ export function isCommentEvent(event: JiraCommentEvent | JiraIssueEvent): event 
 export interface JiraIssueEvent {
   timestamp: number; // Milliseconds e.g. 1518873292317
   // https://developer.atlassian.com/server/jira/platform/webhooks/
-  webhookEvent: 'jira:issue_created' | 'jira:issue_updated' | 'jira:issue_deleted' | UNKNOWN;
-  issue_event_type_name: "issue_assigned" | UNKNOWN;
+  webhookEvent: 'jira:issue_created' | 'jira:issue_updated' | 'jira:issue_deleted' | any;
+  issue_event_type_name: "issue_assigned" | unknown;
   user: User;
   issue: DetailedIssue;
   changelog: Changelog;
@@ -120,27 +118,27 @@ export interface DetailedIssueFields extends IssueFields, CustomFields {
     isWatching: boolean;
   };
 
-  timespent: UNKNOWN | null;
-  fixVersions: UNKNOWN[];
-  aggregatetimespent: UNKNOWN | null;
-  resolution: UNKNOWN | null;
-  resolutiondate: UNKNOWN | null;
+  timespent: unknown | null;
+  fixVersions: unknown[];
+  aggregatetimespent: unknown | null;
+  resolution: unknown | null;
+  resolutiondate: unknown | null;
   workratio: number; // -1
 
-  labels: UNKNOWN[];
-  aggregatetimeoriginalestimate: UNKNOWN | null;
-  timeestimate: UNKNOWN | null;
-  versions: UNKNOWN[];
-  issuelinks: UNKNOWN[];
-  components: UNKNOWN[];
-  timeoriginalestimate: UNKNOWN | null;
-  timetracking: UNKNOWN;
-  security: UNKNOWN | null;
-  attachment: UNKNOWN[];
-  aggregatetimeestimate: UNKNOWN | null;
-  subtasks: UNKNOWN[];
-  environment: UNKNOWN;
-  duedate: UNKNOWN;
+  labels: unknown[];
+  aggregatetimeoriginalestimate: unknown | null;
+  timeestimate: unknown | null;
+  versions: unknown[];
+  issuelinks: unknown[];
+  components: unknown[];
+  timeoriginalestimate: unknown | null;
+  timetracking: unknown;
+  security: unknown | null;
+  attachment: unknown[];
+  aggregatetimeestimate: unknown | null;
+  subtasks: unknown[];
+  environment: unknown;
+  duedate: unknown;
 }
 
 export interface IssueFieldComments extends DetailedIssueFields {
@@ -211,7 +209,7 @@ export interface Changelog {
 export interface ChangelogEntry {
   field: string; // "assignee";
   fieldtype: string; // "jira";
-  fieldId: string; // "assignee";
+  fieldId: keyof DetailedIssueFields; // "assignee";
   from: any; // null;
   fromString: string; // null;
   to: any; // "paul";
@@ -266,34 +264,40 @@ Changed to "Closed"
 ]
 */
 
+interface DevTeamField extends ApiObject {
+  value: string; // 'Supply'
+  id: string; // '10244'
+}
+
 export interface CustomFields {
-  customfield_10000: UNKNOWN | null;
-  customfield_10001: UNKNOWN | null;
-  customfield_10003: UNKNOWN | null;
-  customfield_10004: UNKNOWN | null;
-  customfield_10005: UNKNOWN | null;
-  customfield_10007: UNKNOWN[];
-  customfield_10008: UNKNOWN | null;
+  customfield_10000: unknown | null;
+  customfield_10001: unknown | null;
+  customfield_10003: unknown | null;
+  customfield_10004: unknown | null;
+  customfield_10005: unknown | null;
+  customfield_10007: unknown[];
+  customfield_10008: unknown | null;
   customfield_10012: string; // "0|i00bfq:";
-  customfield_10014: UNKNOWN | null;
-  customfield_10015: UNKNOWN | null;
-  customfield_10016: UNKNOWN | null;
-  customfield_10017: UNKNOWN | null;
-  customfield_10018: UNKNOWN | null;
-  customfield_10019: UNKNOWN | null;
-  customfield_10020: UNKNOWN | null;
-  customfield_10021: UNKNOWN | null;
-  customfield_10022: UNKNOWN | null;
-  customfield_10023: UNKNOWN | null;
-  customfield_10100: UNKNOWN | null;
-  customfield_10200: UNKNOWN | null;
+  customfield_10014: unknown | null;
+  customfield_10015: unknown | null;
+  customfield_10016: unknown | null;
+  customfield_10017: unknown | null;
+  customfield_10018: unknown | null;
+  customfield_10019: unknown | null;
+  customfield_10020: unknown | null;
+  customfield_10021: unknown | null;
+  customfield_10022: unknown | null;
+  customfield_10023: unknown | null;
+  customfield_10100: unknown | null;
+  customfield_10200: unknown | null;
   customfield_10300: string; // "{}";
-  customfield_10400: UNKNOWN | null;
-  customfield_10500: UNKNOWN | null;
-  customfield_10501: UNKNOWN | null;
-  customfield_10700: UNKNOWN | null;
-  customfield_10800: UNKNOWN | null;
-  customfield_10910: UNKNOWN | null;
+  customfield_10400: unknown | null;
+  customfield_10500: unknown | null;
+  customfield_10501: unknown | null;
+  customfield_10700: unknown | null;
+  customfield_10800: unknown | null;
+  customfield_10910: unknown | null;
+  customfield_10922: DevTeamField | null; // Dev Team; string representation in history is e.g. "Fulfilment,Supply"; native rep. = "[10218, 10244]" or null
 }
 
 export function isApiObject(o): o is ApiObject {
