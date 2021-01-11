@@ -1,6 +1,5 @@
-import { getHandlers } from './backend/handlers';
-import { aws } from 'serverless-api-handlers';
+import { report } from './backend/handlers/report';
 
-export = {
-  ...getHandlers(aws)
+export default {
+  report
 };

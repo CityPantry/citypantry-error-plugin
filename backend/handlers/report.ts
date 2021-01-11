@@ -1,24 +1,38 @@
-import { HandlerRequest, HandlerResponse } from 'serverless-api-handlers';
+import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import * as uuid from 'uuid/v4';
 import { config } from '../../config';
-import { IncidentSize, Report, toHumanString } from '../../models';
+import { Report, toHumanString } from '@models';
 import { awsApi } from '../api/aws.api';
 import { Bug, jiraApi } from '../api/jira.api';
 import { slackApi } from '../api/slack.api';
 
-export async function report(request: HandlerRequest): Promise<HandlerResponse> {
-  // Shouldn't need to JSON parse this but we can fix later
-  let body = request.body;
-  if (typeof body !== 'object') {
-    try {
-      body = JSON.parse(body);
-    } catch (e) {
-      console.log('Failed to JSON parse:', body);
-      throw e;
+export const main: APIGatewayProxyHandler = async (event) => {
+  const response = await report(event, undefined, undefined);
+  if (response) {
+    if (!response.headers) {
+      response.headers = {};
     }
+    response.headers['Access-Control-Allow-Origin'] = '*';
   }
+  return response as APIGatewayProxyResult;
+}
 
-  const parsedReport = body as Report & { impact: string }; // TODO: Remove impact after 06/02/2019
+const report: APIGatewayProxyHandler = async (event) => {
+  // Shouldn't need to JSON parse this but we can fix later
+  const body: Report = (() => {
+    if (typeof event.body === 'object') {
+      return event.body;
+    } else {
+      try {
+        return JSON.parse(event.body);
+      } catch (e) {
+        console.log('Failed to JSON parse:', body);
+        throw e;
+      }
+    }
+  })();
+
+  const parsedReport = body as Report & { impact: string };
   const report = {
     ...parsedReport,
     name: trim(parsedReport.name),
@@ -62,7 +76,7 @@ export async function report(request: HandlerRequest): Promise<HandlerResponse> 
     console.log('Upstream error', error);
     return {
       statusCode: 503,
-      body: error.body,
+      body: JSON.stringify(error.body),
     }
   }
 

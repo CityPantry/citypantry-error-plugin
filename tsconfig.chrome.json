@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "lib": [
+      "es2015",
+      "es6",
+      "dom"
+    ],
+    "types": [
+      "chrome",
+      "node"
+    ],
+    "jsx": "react",
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": [
+    "models/**/*.ts",
+    "chrome/**/*.ts",
+    "config/**/*.ts"
+  ],
+  "exclude": [
+    "./parser"
+  ]
+}

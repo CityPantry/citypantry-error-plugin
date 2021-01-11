@@ -1,23 +1,26 @@
 {
+  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "noImplicitAny": false,
-    "sourceMap": false,
-    "lib": [
-      "es2015",
-      "es6",
-      "dom"
-    ],
-    "types": [
-      "chrome",
-      "node"
-    ],
-    "jsx": "react",
-    "skipLibCheck": true,
-    "strict": true
+    "lib": ["ESNext"],
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "target": "ESNext",
+    "outDir": "lib"
   },
+  "include": [
+    "handler.ts",
+    "backend/**/*.ts",
+    "models/**/*.ts"
+  ],
   "exclude": [
+    "node_modules/**/*",
+    ".serverless/**/*",
+    ".webpack/**/*",
+    "_warmup/**/*",
+    ".vscode/**/*",
     "./parser"
   ]
 }

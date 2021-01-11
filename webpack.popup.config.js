@@ -10,6 +10,9 @@ module.exports = {
         test: /\.tsx?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          configFile: require('path').join(__dirname, 'tsconfig.chrome.json'),
+        }
       }
     ]
   },
