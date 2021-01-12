@@ -297,7 +297,7 @@ export interface CustomFields {
   customfield_10700: unknown | null;
   customfield_10800: unknown | null;
   customfield_10910: unknown | null;
-  customfield_10922: DevTeamField | null; // Dev Team; string representation in history is e.g. "Fulfilment,Supply"; native rep. = "[10218, 10244]" or null
+  customfield_10922: DevTeamField[] | null; // Dev Team; string representation in history is e.g. "Fulfilment,Supply"; native rep. = "[10218, 10244]" or null
 }
 
 export function isApiObject(o): o is ApiObject {
