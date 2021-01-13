@@ -1,9 +1,9 @@
+import { Report, toHumanString } from '@models';
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import * as uuid from 'uuid/v4';
 import { config } from '../../config';
-import { Report, toHumanString } from '@models';
 import { awsApi } from '../api/aws.api';
-import { Bug, jiraApi } from '../api/jira.api';
+import { Bug, Document as Doc, jiraApi } from '../api/jira.api';
 import { slackApi } from '../api/slack.api';
 
 export const main: APIGatewayProxyHandler = async (event) => {
@@ -126,34 +126,26 @@ ${config.jiraServer}/browse/${issueKey}`,
   return attachments;
 }
 
-function createJiraDescription(report: Report, screenshotUrl: string | null, dataUrl: string | null): string {
-  return `*Reported By:* ${report.name}
-
-*URL:* ${report.url}
-*Time:* ${report.time}
-
-*What's Wrong:*
-${report.summary}
-
-*Details:*
-${report.description}
-
-*Affected People:*
-${report.affectedPeople}
-
-*Number of Affected People:*
-${toHumanString(report.incidentSize)}
-
-*Current User:*
-${report.isMasquerading ? 'Masquerading as ' : ''}${report.currentUser}
-
-*Steps to Reproduce:*
-${report.stepsToReproduce}
-
-*Screenshot:*
-${screenshotUrl || 'No Screenshot'}
-
-*Console data:*
-${dataUrl ? dataUrl : Buffer.from(report.consoleErrors || '').toString('base64')}
-`;
+function createJiraDescription(report: Report, screenshotUrl: string | null, dataUrl: string | null): Bug['description'] {
+  return {
+    version: 1,
+    type: 'doc',
+    content: [
+      Doc.p(Doc.text(report.description)),
+      Doc.p(
+        Doc.text('User: ', 'strong'), Doc.text((report.isMasquerading ? 'Masquerading as ' : '') + report.currentUser), Doc.br,
+        Doc.text('URL: ', 'strong'), Doc.link(report.url), Doc.br,
+        Doc.text('Time: ', 'strong'), Doc.text(report.time),
+      ),
+      Doc.p(
+        Doc.text('Steps to Reproduce:', 'strong'), Doc.br,
+        Doc.text(report.stepsToReproduce)
+      ),
+      Doc.p(Doc.text('Affected People: ', 'strong'), Doc.text(report.affectedPeople)),
+      Doc.p(Doc.text('Number of Affected People: ', 'strong'), Doc.text('123')),
+      Doc.p(Doc.text('Screenshot:', 'strong'), Doc.br, screenshotUrl ? Doc.link(screenshotUrl) : Doc.text('No Screenshot')),
+      Doc.p(Doc.text('Console data:', 'strong'), Doc.br, dataUrl ? Doc.link(dataUrl) : Doc.text(Buffer.from(report.consoleErrors || '').toString('base64'))),
+      Doc.p(Doc.text('Reported By: ', 'strong'), Doc.text(report.name)),
+    ]
+  };
 }

@@ -108,13 +108,6 @@ function generateBlocks(data: { userName: string, teamName: string, issueLink: s
       }
     },
     {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `<${data.issueLink}|Open in Jira>`
-      }
-    },
-    {
       type: 'divider'
     },
   ].filter(Boolean);
