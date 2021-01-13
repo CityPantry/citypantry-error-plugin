@@ -9,7 +9,7 @@ export const main: APIGatewayProxyHandler = async (apiEvent) => {
   await processEvent(event);
 
   return {
-    statusCode: 201,
+    statusCode: 204,
     body: '',
   };
 }

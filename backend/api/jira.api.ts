@@ -39,11 +39,34 @@ export class JiraApi {
 
     console.log('About to create JIRA ticket', JSON.stringify({ fields }));
 
-    const { data } = await axios.post(`${API_PATH}/issue`, { fields }, {
-      auth
-    });
+    const { data } = await axios.post(
+      `${API_PATH}/issue`,
+      { fields },
+      { auth }
+    );
 
     return data.key;
+  }
+
+  public async updateIssueDescription(issueKey: string, description: Bug['description']['content']): Promise<void> {
+    await axios.put(
+      `${API_PATH}/issue/${issueKey}`,
+      {
+        update:
+          {
+            description: [
+              {
+                set: {
+                  version: 1,
+                  type: 'doc',
+                  content: description
+                }
+              }
+            ]
+          }
+        },
+      { auth }
+    );
   }
 
   private getPriority(): string {

@@ -75,6 +75,19 @@ const serverlessConfiguration: AWS = {
         },
       ]
     },
+    // test: {
+    //   handler: 'backend/handlers/test.main',
+    //   timeout: 30,
+    //   events: [
+    //     {
+    //       http: {
+    //         method: 'post',
+    //         path: 'test',
+    //         cors: true,
+    //       }
+    //     },
+    //   ]
+    // },
   }
 }
 

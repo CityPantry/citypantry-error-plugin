@@ -1,11 +1,14 @@
 import { config } from '../../config';
 import axios from 'axios';
 
+const AUTH_HEADERS = {
+  'Authorization': `Bearer ${config.slackBotToken}`
+};
+
 export interface BasicPostData {
   channel?: string;
   username?: string;
   attachments?: any[];
-  url?: string;
 }
 
 export interface TextPostData extends BasicPostData {
@@ -31,8 +34,8 @@ export interface BlockData {
 
 export class SlackApi {
 
-  async post(props: TextPostData | BlocksPostData): Promise<void> {
-    const { channel, username, attachments, url } = props;
+  async post(props: TextPostData | BlocksPostData): Promise<string> {
+    const { channel, username, attachments } = props;
 
     const data: any = {
       channel: channel || config.channel,
@@ -48,10 +51,30 @@ export class SlackApi {
 
     console.log('Posting to slack', data);
 
-    await axios(url || `https://hooks.slack.com${config.slackUrl}`, {
+    const response = await axios(`https://slack.com/api/chat.postMessage`, {
       method: 'post',
-      data
+      data,
+      headers: AUTH_HEADERS,
     });
+
+    return await this.getPermalink(response.data);
+  }
+
+  async getPermalink(message: { channel: string, ts: string }): Promise<string> {
+    const response = await axios.get(`https://slack.com/api/chat.getPermalink`, {
+      params: {
+        channel: message.channel,
+        message_ts: message.ts
+      },
+      headers: AUTH_HEADERS,
+    });
+
+    if (response.status >= 200 && response.status < 300 && response.data.ok) {
+      return response.data.permalink;
+    } else {
+      console.log('Unable to get permalink', response.status, JSON.stringify(response.data));
+      return '';
+    }
   }
 }
 
