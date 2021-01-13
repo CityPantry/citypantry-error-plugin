@@ -33,19 +33,18 @@ async function processEvent(event: JiraIssueEvent): Promise<void> {
 
   console.log('Dev Team Updated', previousValue, previousTeams, newValue, newTeams);
 
-  // TODO this is not correctly filtering out old teams
-  const teamsAdded = newTeams.filter(({id}) => !previousTeams.find(({id: previousId}) => previousId === id));
+  const teamsAdded = newTeams.filter(({id}) => !previousTeams.find(({id: previousId}) => `${previousId}` === `${id}`));
 
   console.log('New Teams:', teamsAdded);
 
-  if (!newTeams.length) {
+  if (!teamsAdded.length) {
     return;
   }
 
   const issueKey = event.issue.key;
   const issueLink = `${config.jiraServer}/browse/${issueKey}`;
 
-  await Promise.all(newTeams.map(async (team) => {
+  await Promise.all(teamsAdded.map(async (team) => {
     const blocks = generateBlocks({
       issueKey,
       issueLink,
@@ -63,8 +62,6 @@ async function processEvent(event: JiraIssueEvent): Promise<void> {
     //   'title_link': issueLink,
     //   'text': `${description.length > 300 ? description.substr(0, 300).trimRight() + '…' : description}${description ? '\n\n' : ''}<View Issue|${issueLink}>`,
     // }];
-
-    console.log('Posting for team:', team.name);
 
     try {
       await slackApi.post({
@@ -105,11 +102,14 @@ function isCreate(event: JiraIssueEvent): boolean {
 */
 
 function generateBlocks(data: { userName: string, teamName: string, issueLink: string, issueKey: string, issueTitle: string, issueDescription: string }): BlockData[] {
+  const MAX_LINES = 5;
+  const MAX_CHARACTERS = 300;
+
   let description = data.issueDescription || '';
   description = description.trim();
   const lines = description.split('\n');
-  const lineBreakIndex = lines.slice(0, 3).map((line) => line.length + 1).reduce((a, b) => a + b, 0) - 1;
-  const breakPoint = Math.min(description.length, lineBreakIndex, 300);
+  const lineBreakIndex = lines.slice(0, MAX_LINES).map((line) => line.length + 1).reduce((a, b) => a + b, 0) - 1;
+  const breakPoint = Math.min(description.length, lineBreakIndex, MAX_CHARACTERS);
   const shortDescription = description.substr(0, breakPoint) + (breakPoint <= description.length ? '…' : '');
 
   return [
@@ -117,7 +117,7 @@ function generateBlocks(data: { userName: string, teamName: string, issueLink: s
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `A bug was assigned to ${data.teamName} team by ${data.userName}.`
+        text: `A bug was assigned to ${data.teamName} team by *${data.userName}*:`
       }
     },
     {
@@ -127,23 +127,40 @@ function generateBlocks(data: { userName: string, teamName: string, issueLink: s
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `*<${data.issueLink}|${data.issueKey}: ${data.issueTitle}>*\n\n${shortDescription}${shortDescription ? '\n\n' : ''}<${data.issueKey}|${data.issueLink}>`
+        text: `*<${data.issueLink}|${data.issueKey}: ${data.issueTitle}>*`
+      }
+    },
+    shortDescription && {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `${shortDescription}`
       }
     },
     {
-      type: 'actions',
-      elements: [
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: 'View Bug',
-            emoji: true
-          },
-          value: 'open_bug',
-          url: data.issueLink
-        }
-      ]
-    }
-  ];
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `<${data.issueLink}|Open in Jira>`
+      }
+    },
+    {
+      type: 'divider'
+    },
+    // {
+    //   type: 'actions',
+    //   elements: [
+    //     {
+    //       type: 'button',
+    //       text: {
+    //         type: 'plain_text',
+    //         text: 'View Bug',
+    //         emoji: true
+    //       },
+    //       value: 'open_bug',
+    //       url: data.issueLink
+    //     }
+    //   ]
+    // }
+  ].filter(Boolean);
 }
