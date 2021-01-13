@@ -112,7 +112,7 @@ ${report.stepsToReproduce}
 
 *Issue URL*
 ${config.jiraServer}/browse/${issueKey}`,
-    'color': '#FFF200'
+    'color': '#FF8000'
   }];
   if (imageUrl) {
     attachments.push({
@@ -120,7 +120,7 @@ ${config.jiraServer}/browse/${issueKey}`,
       'title': `Screenshot of ${issueKey}`,
       'title_link': imageUrl,
       'image_url': imageUrl,
-      'color': '#FFF200'
+      'color': '#FF8000'
     })
   }
   return attachments;
