@@ -76,6 +76,22 @@ export class SlackApi {
       return '';
     }
   }
+
+  async findUserByEmail(email: string): Promise<{ id: string, name: string, real_name: string } | null> {
+    const response = await axios.get(`https://slack.com/api/users.lookupByEmail`, {
+      params: {
+        email
+      },
+      headers: AUTH_HEADERS,
+    });
+
+    if (response.status >= 200 && response.status < 300 && response.data.ok) {
+      return response.data.user;
+    } else {
+      console.log('Unable to get permalink', response.status, JSON.stringify(response.data));
+      return null;
+    }
+  }
 }
 
 export const slackApi = new SlackApi();

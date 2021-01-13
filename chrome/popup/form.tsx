@@ -28,6 +28,7 @@ export class Form extends React.Component<FormProps, FormState> {
     super(props);
     const form = props.form || {
       name: props.metadata.name || '',
+      email: props.metadata.email || '',
       summary: '',
       description: '',
       affectedPeople: props.snapshot?.currentUser?.simpleName || '',

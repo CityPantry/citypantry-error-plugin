@@ -2,6 +2,7 @@ import { IncidentSize } from './incident-size.enum';
 
 export interface Report {
   name: string;
+  email: string;
   summary: string;
   description: string;
   affectedPeople: string;

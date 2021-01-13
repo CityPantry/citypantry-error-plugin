@@ -44,7 +44,7 @@ const report: APIGatewayProxyHandler = async (event) => {
   } as Report;
 
   // SLACK
-  const screenshot = report.screenshot ? new Buffer(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64') : null;
+  const screenshot = report.screenshot ? Buffer.from(report.screenshot.replace(/^data:image\/\w+;base64,/, ''), 'base64') : null;
 
   const reportUuid = uuid(); // used in filenames so that they are not guessable by the public
   const imageName = `screenshot-${report.name.replace(/\W/gi, '').toLowerCase()}-${report.time}-${reportUuid}.png`;
@@ -55,6 +55,7 @@ const report: APIGatewayProxyHandler = async (event) => {
     dataUrl = await awsApi.uploadText(report.consoleErrors, errorFileName);
     console.log(`Uploaded consoleErrors to ${dataUrl}`);
   }
+  const slackId = await getSlackId(report.email);
 
   const imageUrl = screenshot ? await awsApi.uploadImage(screenshot, imageName) : null;
   if (imageUrl) {
@@ -70,14 +71,14 @@ const report: APIGatewayProxyHandler = async (event) => {
 
   try {
     const issueKey = await jiraApi.createIssue(bug);
-    const attachments = createSlackAttachments(report, imageUrl, issueKey);
+    const attachments = createSlackAttachments(report, slackId, imageUrl, issueKey);
     const slackUrl = await slackApi.post({ text: `New Bug Reported:`, attachments });
     await jiraApi.updateIssueDescription(issueKey, updateDescriptionWithSlackLink(bug, slackUrl));
   } catch (error) {
     console.log('Upstream error', error);
     return {
       statusCode: 503,
-      body: JSON.stringify(error.body),
+      body: JSON.stringify(error),
     }
   }
 
@@ -87,16 +88,29 @@ const report: APIGatewayProxyHandler = async (event) => {
   };
 }
 
+async function getSlackId(email: string): Promise<string | null> {
+  let slackId = null;
+  try {
+    const user = await slackApi.findUserByEmail(email);
+    if (user) {
+      slackId = user.id;
+    }
+  } catch (e) {
+    console.log('Failed to retrieve Slack user:', e);
+  }
+  return slackId;
+}
+
 function trim(text: string): string {
   return (text || '').trim();
 }
 
-function createSlackAttachments(report: Report, imageUrl: string | null, issueKey: string): any[] {
+function createSlackAttachments(report: Report, slackId: string | null, imageUrl: string | null, issueKey: string): any[] {
   const attachments: any[] = [{
     'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
     'title': `${issueKey}: ${report.summary}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
-    'text': `*Reporter:* ${report.name}
+    'text': `*Reporter:* ${slackId ? `<@${slackId}>` : report.name}
 *Incident Size*: ${toHumanString(report.incidentSize)}
 
 *What's Wrong?*
