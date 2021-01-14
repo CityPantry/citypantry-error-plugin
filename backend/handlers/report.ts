@@ -113,7 +113,7 @@ function createSlackAttachments(report: Report, slackId: string | null, imageUrl
     'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
     'title': `${issueKey}: ${report.summary}`,
     'title_link': `${config.jiraServer}/browse/${issueKey}`,
-    'text': `*Reporter:* ${slackId ? `<@${slackId}>` : report.name}
+    'text': `*Reporter:* ${report.name}${slackId ? ` (<@${slackId}>)` : ''}
 *Incident Size*: ${toHumanString(report.incidentSize)}
 
 *What's Wrong?*
