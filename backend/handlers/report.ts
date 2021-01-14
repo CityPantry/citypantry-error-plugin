@@ -73,7 +73,10 @@ const report: APIGatewayProxyHandler = async (event) => {
     const issueKey = await jiraApi.createIssue(bug);
     const attachments = createSlackAttachments(report, slackId, imageUrl, issueKey);
     const slackUrl = await slackApi.post({ text: `New Bug Reported:`, attachments });
-    await jiraApi.updateIssueDescription(issueKey, updateDescriptionWithSlackLink(bug, slackUrl));
+
+    if (slackUrl) {
+      await jiraApi.updateIssueDescription(issueKey, updateDescriptionWithSlackLink(bug, slackUrl));
+    }
   } catch (error) {
     console.log('Upstream error', error);
     return {

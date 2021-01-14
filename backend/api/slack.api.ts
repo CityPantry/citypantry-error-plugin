@@ -57,6 +57,11 @@ export class SlackApi {
       headers: AUTH_HEADERS,
     });
 
+    if (response.status < 200 || response.status > 299 || !response.data.ok) {
+      console.log('Failed to post', response.status, response.data);
+      throw new Error('Unable to post to Slack');
+    }
+
     return await this.getPermalink(response.data);
   }
 
