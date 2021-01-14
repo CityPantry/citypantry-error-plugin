@@ -8,7 +8,7 @@ const teams: TeamConfig[] = [
   {
     name: 'Supply',
     id: '10244',
-    slackChannel: '#slack-test',
+    slackChannel: 'CLEEA2KTJ', // #dev-supply
   },
   {
     name: 'Demand',
