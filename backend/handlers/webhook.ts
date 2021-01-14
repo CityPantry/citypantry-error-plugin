@@ -24,6 +24,10 @@ async function processEvent(event: JiraIssueEvent): Promise<void> {
     return;
   }
 
+  if (event.issue.fields.issuetype.name !== config.bugIssueName) {
+    return;
+  }
+
   const previousValue = isCreateEvent ? null : event.changelog.items.find((item) => item.fieldId === 'customfield_10922').from as string | null;
   const previousTeams = previousValue ? findTeamsByChangelogValue(previousValue) : [];
 
