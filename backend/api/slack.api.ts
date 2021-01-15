@@ -1,5 +1,6 @@
-import { config } from '../../config';
 import axios from 'axios';
+import * as FormData from 'form-data';
+import { config } from '../../config';
 
 const AUTH_HEADERS = {
   'Authorization': `Bearer ${config.slackBotToken}`
@@ -7,6 +8,7 @@ const AUTH_HEADERS = {
 
 export interface BasicPostData {
   channel?: string;
+  threadTs?: string; // For replying to a thread
   username?: string;
   attachments?: any[];
 }
@@ -32,9 +34,15 @@ export interface BlockData {
   [key: string]: any;
 }
 
+export interface MessageData {
+  ts: string;
+  channel: string;
+  permalink: string;
+}
+
 export class SlackApi {
 
-  async post(props: TextPostData | BlocksPostData): Promise<string> {
+  async post(props: TextPostData | BlocksPostData): Promise<MessageData> {
     const { channel, username, attachments } = props;
 
     const data: any = {
@@ -49,7 +57,11 @@ export class SlackApi {
       data.blocks = props.blocks;
     }
 
-    console.log('Posting to slack', data);
+    if (props.threadTs) {
+      data.thread_ts = props.threadTs;
+    }
+
+    console.log('Posting to slack', JSON.stringify(data));
 
     const response = await axios(`https://slack.com/api/chat.postMessage`, {
       method: 'post',
@@ -62,7 +74,15 @@ export class SlackApi {
       throw new Error('Unable to post to Slack');
     }
 
-    return await this.getPermalink(response.data);
+    console.log('Posted to Slack', response.status, response.data);
+
+    const permalink = await this.getPermalink(response.data);
+
+    return {
+      permalink,
+      channel: response.data.channel,
+      ts: response.data.ts
+    };
   }
 
   async getPermalink(message: { channel: string, ts: string }): Promise<string> {
@@ -96,6 +116,42 @@ export class SlackApi {
       console.log('Unable to get permalink', response.status, JSON.stringify(response.data));
       return null;
     }
+  }
+
+  async uploadImage({ data, channels, threadTs, filename }: { data: Buffer, channels?: string, threadTs?: string, filename?: string }): Promise<any> {
+    const formData = new FormData();
+
+    if (filename) {
+      formData.append('filename', filename);
+    }
+    if (channels) {
+      formData.append('channels', channels);
+    }
+    if (threadTs) {
+      formData.append('thread_ts', threadTs);
+    }
+
+    console.log('Uploading image:', { channels, threadTs, filename });
+
+    formData.append('file', data, { knownLength: data.length, filename });
+
+    const requestConfig = {
+      headers: {
+        ...AUTH_HEADERS,
+        ...formData.getHeaders()
+      }
+    };
+
+    const response = await axios.post(`https://slack.com/api/files.upload`, formData, requestConfig);
+
+    console.log('Image upload', response.status, JSON.stringify(response.data, null, 2));
+
+    if (response.status < 200 || response.status >= 300 || !response.data.ok) {
+      console.log('Failed to upload image: ' + JSON.stringify(response.data, null, 2));
+      throw response.data;
+    }
+
+    return response.data;
   }
 }
 

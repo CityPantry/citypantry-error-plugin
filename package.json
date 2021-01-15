@@ -19,6 +19,7 @@
   "dependencies": {
     "aws-sdk": "^2.209.0",
     "axios": "^0.21.1",
+    "form-data": "^3.0.0",
     "pify": "^3.0.0",
     "preact": "^8.4.2",
     "source-map-support": "^0.5.19",

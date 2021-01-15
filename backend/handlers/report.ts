@@ -4,7 +4,7 @@ import * as uuid from 'uuid/v4';
 import { config } from '../../config';
 import { awsApi } from '../api/aws.api';
 import { Bug, Document as Doc, jiraApi } from '../api/jira.api';
-import { slackApi } from '../api/slack.api';
+import { BlockData, BlocksPostData, slackApi } from '../api/slack.api';
 
 export const main: APIGatewayProxyHandler = async (event) => {
   const response = await report(event, undefined, undefined);
@@ -18,7 +18,6 @@ export const main: APIGatewayProxyHandler = async (event) => {
 }
 
 const report: APIGatewayProxyHandler = async (event) => {
-  // Shouldn't need to JSON parse this but we can fix later
   const body: Report = (() => {
     if (typeof event.body === 'object') {
       return event.body;
@@ -71,8 +70,37 @@ const report: APIGatewayProxyHandler = async (event) => {
 
   try {
     const issueKey = await jiraApi.createIssue(bug);
-    const attachments = createSlackAttachments(report, slackId, imageUrl, issueKey);
-    const slackUrl = await slackApi.post({ text: `New Bug Reported:`, attachments });
+
+    const { post: slackPost, threadReply } = createSlackBody(report, slackId, issueKey);
+    console.log('Posting', slackPost);
+    const { permalink: slackUrl, ts: slackTs, channel: slackChannel } = await slackApi.post({ ...slackPost, channel: config.channel });
+    // console.log('Updating:', {
+    //   channel: slackChannel,
+    //   thread_ts: slackTs,
+    //   blocks: threadReply
+    // });
+    await slackApi.post({ // Thread reply
+      channel: slackChannel,
+      threadTs: slackTs,
+      blocks: threadReply
+    });
+    if (screenshot) {
+      try {
+        await slackApi.uploadImage({
+          data: screenshot,
+          channels: slackChannel,
+          threadTs: slackTs,
+          filename: 'Screenshot for ' + issueKey
+        });
+      } catch (e) {
+        console.log('Error uploading screenshot', e);
+        await slackApi.post({
+          channel: slackChannel,
+          threadTs: slackTs,
+          text: '*Screenshot:* ' + imageUrl
+        })
+      }
+    }
 
     if (slackUrl) {
       await jiraApi.updateIssueDescription(issueKey, updateDescriptionWithSlackLink(bug, slackUrl));
@@ -108,40 +136,69 @@ function trim(text: string): string {
   return (text || '').trim();
 }
 
-function createSlackAttachments(report: Report, slackId: string | null, imageUrl: string | null, issueKey: string): any[] {
-  const attachments: any[] = [{
-    'fallback': `Bug report ${issueKey} reported by ${report.name} for ${report.time} at ${report.url}`,
-    'title': `${issueKey}: ${report.summary}`,
-    'title_link': `${config.jiraServer}/browse/${issueKey}`,
-    'text': `*Reporter:* ${report.name}${slackId ? ` (<@${slackId}>)` : ''}
-*Incident Size*: ${toHumanString(report.incidentSize)}
 
-*What's Wrong?*
-${report.description}
-
+function createSlackBody(report: Report, slackId: string | null, issueKey: string): { post: BlocksPostData, threadReply: BlockData[] } {
+  const jiraLink = `${config.jiraServer}/browse/${issueKey}`;
+  return {
+    post: {
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'New bug reported:'
+          }
+        },
+        {
+          type: 'divider'
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*<${jiraLink}|${issueKey}: ${report.summary}>*`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*URL:* <${report.url}|https://citypantry.com/foo/bar?baasdaasda>`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*What's Wrong?*\n${report.description}`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Incident Size:* ${toHumanString(report.incidentSize)}\n*Reporter:* ${report.name}${slackId ? `(<@${slackId}>)` : ''}`
+          }
+        },
+      ]
+    },
+    threadReply: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Affected People:* ${report.affectedPeople}
 *Time:* ${report.time}
-*Affected People:* ${report.affectedPeople}
 
 *Steps to Reproduce*:
 _${report.isMasquerading ? 'Masquerading' : 'Logged in'} as ${report.currentUser}_
-${report.url}
+<${report.url}|${report.url}>
 
-${report.stepsToReproduce}
-
-*Issue URL*
-${config.jiraServer}/browse/${issueKey}`,
-    'color': '#FF8000'
-  }];
-  if (imageUrl) {
-    attachments.push({
-      'fallback': `Screenshot uploaded by ${report.name} for ${report.time} at ${imageUrl}`,
-      'title': `Screenshot of ${issueKey}`,
-      'title_link': imageUrl,
-      'image_url': imageUrl,
-      'color': '#FF8000'
-    })
-  }
-  return attachments;
+${report.stepsToReproduce}`
+        }
+      }
+    ],
+  };
 }
 
 function createJiraDescription(report: Report, screenshotUrl: string | null, dataUrl: string | null): Bug['description'] {
