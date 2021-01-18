@@ -4,7 +4,8 @@ import * as uuid from 'uuid/v4';
 import { config } from '../../config';
 import { awsApi } from '../api/aws.api';
 import { Bug, Document as Doc, jiraApi } from '../api/jira.api';
-import { BlockData, BlocksPostData, slackApi } from '../api/slack.api';
+import { slackApi } from '../api/slack.api';
+import { createSlackBody } from '../services/slack-body';
 
 export const main: APIGatewayProxyHandler = async (event) => {
   const body: Report = (() => {
@@ -136,70 +137,6 @@ function trim(text: string): string {
   return (text || '').trim();
 }
 
-
-function createSlackBody(report: Report, slackId: string | null, issueKey: string): { post: BlocksPostData, threadReply: BlockData[] } {
-  const jiraLink = `${config.jiraServer}/browse/${issueKey}`;
-  return {
-    post: {
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: 'New bug reported:'
-          }
-        },
-        {
-          type: 'divider'
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `*<${jiraLink}|${issueKey}: ${report.summary}>*`
-          }
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `*URL:* <${report.url}|${report.url}>`
-          }
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `*What's Wrong?*\n${report.description}`
-          }
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `*Incident Size:* ${toHumanString(report.incidentSize)}\n*Reporter:* ${report.name}${slackId ? `(<@${slackId}>)` : ''}`
-          }
-        },
-      ]
-    },
-    threadReply: [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*Affected People:* ${report.affectedPeople}
-*Time:* ${report.time}
-
-*Steps to Reproduce*:
-_${report.isMasquerading ? 'Masquerading' : 'Logged in'} as ${report.currentUser}_
-<${report.url}|${report.url}>
-
-${report.stepsToReproduce}`
-        }
-      }
-    ],
-  };
-}
 
 function createJiraDescription(report: Report, screenshotUrl: string | null, dataUrl: string | null): Bug['description'] {
   return {

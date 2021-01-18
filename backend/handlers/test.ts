@@ -1,5 +1,6 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import { slackApi } from '../api/slack.api';
+import { ActionIds } from '../services/slack-body';
 
 export const main: APIGatewayProxyHandler = async (event) => {
   const response = await foo(event, undefined, undefined);
@@ -27,7 +28,15 @@ const foo: APIGatewayProxyHandler = async () => {
         "type": "divider"
       },
       {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: 'Developer actions:'
+        }
+      },
+      {
         "type": "actions",
+        "block_id": "actions",
         "elements": [
           {
             "type": "button",
@@ -37,8 +46,8 @@ const foo: APIGatewayProxyHandler = async () => {
               "emoji": true
             },
             "style": "primary",
-            "value": "verified",
-            "action_id": "resolve-verified"
+            "value": 'CPD-11684',
+            "action_id": ActionIds.RESOLVE_VERIFIED
           },
           {
             "type": "button",
@@ -48,8 +57,8 @@ const foo: APIGatewayProxyHandler = async () => {
               "emoji": true
             },
             "style": "danger",
-            "value": "notabug",
-            "action_id": "resolve-notabug",
+            "value": 'CPD-11684',
+            "action_id": ActionIds.RESOLVE_NOTABUG,
             "confirm": {
               "title": {
                 "type": "plain_text",
