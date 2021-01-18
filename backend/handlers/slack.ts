@@ -3,8 +3,8 @@ import axios from 'axios';
 import * as QueryString from 'querystring';
 import { config } from '../../config';
 import { jiraApi } from '../api/jira.api';
-import { BlockData, slackApi } from '../api/slack.api';
-import { ActionIds, createAssignActions, createClosedBlocks, getAction } from '../services/slack-body';
+import { slackApi } from '../api/slack.api';
+import { ActionIds, BlockUpdate, createAssignActions, createClosedBlocks, getAction } from '../services/slack-body';
 
 export const main: APIGatewayProxyHandler = (event, _, callback) => {
   try {
@@ -54,32 +54,25 @@ async function run(body: any, callback: Callback<APIGatewayProxyResult>): Promis
   const resolveAction = getAction(body, ActionIds.RESOLVE_VERIFIED);
   const closeAction = getAction(body, ActionIds.RESOLVE_NOTABUG);
 
-  let newActions = null;
+  let updateActions: BlockUpdate | null = null;
 
-  console.log('Resolve action', resolveAction);
   if (resolveAction) {
     const issueKey = resolveAction.value;
-    console.log('Updating jira: resolve');
     await jiraApi.transitionIssue(issueKey, config.transitionIds.verified);
+    await jiraApi.addComment(issueKey, `Issue marked as verified from Slack by user ${body.user.name} (@${body.user.username})`);
 
-    newActions = createAssignActions(issueKey, body.user.id);
+    updateActions = createAssignActions(issueKey, body.user.id);
   } else if (closeAction) {
     const issueKey = closeAction.value;
-    console.log('Updating jira: close');
     await jiraApi.transitionIssue(issueKey, config.transitionIds.closed);
+    await jiraApi.addComment(issueKey, `Issue closed from Slack by user ${body.user.name} (@${body.user.username})`);
 
-    newActions = createClosedBlocks(issueKey, body.user.id);
+    updateActions = createClosedBlocks(body.user.id);
   }
 
-  if (newActions) {
-    if (!Array.isArray(newActions)) {
-      newActions = [newActions];
-    }
-    const blocks: BlockData[] = body.message.blocks.slice();
-    const index = blocks.findIndex(({ block_id }) => block_id === 'actions');
-    blocks.splice(index, 1, ...newActions);
+  if (updateActions) {
     const newMessage = {
-      blocks,
+      blocks: updateActions(body.message.blocks),
     };
 
     const responseUrl = body.response_url;

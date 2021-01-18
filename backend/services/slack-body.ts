@@ -69,6 +69,7 @@ export function createSlackBody(report: Report, slackId: string | null, issueKey
         },
         {
           type: 'section',
+          block_id: 'actions_prompt',
           text: {
             type: 'mrkdwn',
             text: 'Developer actions:'
@@ -141,24 +142,64 @@ ${report.stepsToReproduce}`
   };
 }
 
-export function createAssignActions(issueKey: string, userId: string): BlockData {
+export interface BlockUpdate {
+  (blocks: BlockData[]): BlockData[];
+}
+
+function replace(oldId: string, ...newItems: BlockData[]): BlockUpdate {
+  return (blocks) => {
+    blocks = blocks.slice();
+    const index = blocks.findIndex(({ block_id }) => block_id === oldId);
+
+    blocks.splice(index, 1, ...newItems);
+
+    return blocks;
+  };
+}
+
+function chain(...updates: BlockUpdate[]): BlockUpdate {
+  return (blocks) => {
+    for (const update of updates) {
+      blocks = update(blocks);
+    }
+    return blocks;
+  };
+}
+
+export function createAssignActions(issueKey: string, userId: string): BlockUpdate {
   issueKey = issueKey + '';
-  return {
+
+  return replace('actions', {
     type: 'section',
     text: {
       type: 'mrkdwn',
       text: `:syringe: Issue marked as *verified* by <@${userId}>`
     }
-  };
+  });
 }
 
-export function createClosedBlocks(issueKey: string, userId: string): BlockData {
-  issueKey = issueKey + '';
-  return {
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `:x: Issue marked as *not a bug* by <@${userId}>`
-    }
-  };
+export function createMovedToTeamBlocks(teamName: string, userId: string): BlockUpdate {
+  return chain(
+    replace('actions_prompt'),
+    replace('actions', {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `:wrench: Issue assigned to *${teamName} team* by <@${userId}>`
+      }
+    }),
+  );
+}
+
+export function createClosedBlocks(userId: string): BlockUpdate {
+  return chain(
+    replace('actions_prompt'),
+    replace('actions', {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `:x: Issue marked as *not a bug* by <@${userId}>`
+      }
+    }),
+  );
 }

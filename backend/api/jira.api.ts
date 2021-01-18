@@ -82,7 +82,19 @@ export class JiraApi {
   }
 
   public async addComment(issueKey: string, comment: string) {
-
+    await axios.post(
+      `${API_PATH}/issue/${issueKey}/comment`,
+      {
+        body: {
+          version: 1,
+          type: 'doc',
+          content: [
+            Document.p(comment),
+          ]
+        }
+      },
+      { auth }
+    );
   }
 
   private getPriority(): string {
