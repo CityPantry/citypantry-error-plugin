@@ -8,5 +8,9 @@ export const config = {
   jiraToken: 'token from https://id.atlassian.com/manage/api-tokens',
   jiraServer: 'https://your-organisation.atlassian.net',
   projectKey: 'The project key is the prefix that your stories have e.g. ABC-123 has project key ABC',
-  bugIssueName: 'Most likely "Bug" or similar.'
+  bugIssueName: 'Most likely "Bug" or similar.',
+  transitionIds: {
+    closed: '31',
+    verified: '221',
+  }
 };

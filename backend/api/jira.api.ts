@@ -69,6 +69,22 @@ export class JiraApi {
     );
   }
 
+  public async transitionIssue(issueKey: string, transitionId: string): Promise<void> {
+    await axios.post(
+      `${API_PATH}/issue/${issueKey}/transitions`,
+      {
+        transition: {
+          id: transitionId
+        }
+      },
+      { auth }
+    );
+  }
+
+  public async addComment(issueKey: string, comment: string) {
+
+  }
+
   private getPriority(): string {
     return '3'; // Medium, as bugs are prioritised manually
   }
