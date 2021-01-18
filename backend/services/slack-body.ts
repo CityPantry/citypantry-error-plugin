@@ -71,7 +71,7 @@ export function createSlackBody(report: Report, slackId: string | null, issueKey
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*Incident Size:* ${toHumanString(report.incidentSize)}\n*Reporter:* ${report.name}${slackId ? `(<@${slackId}>)` : ''}`
+            text: `*Incident Size:* ${toHumanString(report.incidentSize)}\n*Reporter:* ${report.name}${slackId ? ` (<@${slackId}>)` : ''}`
           }
         },
         {
