@@ -62,8 +62,7 @@ async function run(body: any, callback: Callback<APIGatewayProxyResult>): Promis
   const closeAction = getAction(body, ActionIds.RESOLVE_NOTABUG);
   const assignTeamAction = getAction(body, ActionIds.ASSIGN_TEAM);
 
-  console.log(body.actions);
-
+  // TODO clean this up, there should be some sort of switch statement
   let updateActions: BlockUpdate | null = null;
 
   if (resolveAction) {
@@ -84,6 +83,8 @@ async function run(body: any, callback: Callback<APIGatewayProxyResult>): Promis
     const team = Teams.get(teamId);
 
     console.log('Assigning issue to team', issueKey, team.name);
+    await jiraApi.assignToTeam(issueKey, teamId);
+    await jiraApi.addComment(issueKey, `Issue assigned to ${team.name} team from Slack by user ${body.user.name} (@${body.user.username})`);
 
     updateActions = createMovedToTeamBlocks(team.name, body.user.id)
   }

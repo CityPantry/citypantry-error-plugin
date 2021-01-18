@@ -81,7 +81,7 @@ export class JiraApi {
     );
   }
 
-  public async addComment(issueKey: string, comment: string) {
+  public async addComment(issueKey: string, comment: string): Promise<void> {
     await axios.post(
       `${API_PATH}/issue/${issueKey}/comment`,
       {
@@ -94,6 +94,25 @@ export class JiraApi {
         }
       },
       { auth }
+    );
+  }
+
+  public async assignToTeam(issueKey: string, teamId: string): Promise<void> {
+    await axios.put(
+      `${API_PATH}/issue/${issueKey}`,
+      {
+        update:
+          {
+            customfield_10922: [
+              {
+                add: {
+                  id: teamId
+                }
+              }
+            ]
+          }
+      },
+      {auth}
     );
   }
 
