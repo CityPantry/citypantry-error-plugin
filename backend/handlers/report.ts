@@ -7,17 +7,6 @@ import { Bug, Document as Doc, jiraApi } from '../api/jira.api';
 import { BlockData, BlocksPostData, slackApi } from '../api/slack.api';
 
 export const main: APIGatewayProxyHandler = async (event) => {
-  const response = await report(event, undefined, undefined);
-  if (response) {
-    if (!response.headers) {
-      response.headers = {};
-    }
-    response.headers['Access-Control-Allow-Origin'] = '*';
-  }
-  return response as APIGatewayProxyResult;
-}
-
-const report: APIGatewayProxyHandler = async (event) => {
   const body: Report = (() => {
     if (typeof event.body === 'object') {
       return event.body;
@@ -31,7 +20,18 @@ const report: APIGatewayProxyHandler = async (event) => {
     }
   })();
 
-  const parsedReport = body as Report & { impact: string };
+  const response = await report(body);
+  if (response) {
+    if (!response.headers) {
+      response.headers = {};
+    }
+    response.headers['Access-Control-Allow-Origin'] = '*';
+  }
+  return response as APIGatewayProxyResult;
+}
+
+export const report = async (requestBody: Report): Promise<APIGatewayProxyResult> => {
+  const parsedReport = requestBody as Report & { impact: string };
   const report = {
     ...parsedReport,
     name: trim(parsedReport.name),
