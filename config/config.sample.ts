@@ -1,6 +1,7 @@
 export const config = {
   slackUrl: '/services/XXXXXXXXX/YYYYYYYYY/zzzzzzzzzzzzzzzzzzzzzzzz',
   slackBotToken: 'xoxb-xxxxxxxx-yyyyyyyyy',
+  authorisedUserGroupId: 'ID of the user group permitted to change issues',
   username: 'Bug Watcher',
   channel: '#channel-name',
   jiraUser: 'user@email.com',

@@ -153,6 +153,22 @@ export class SlackApi {
 
     return response.data;
   }
+
+  async getUserIdsInGroup(groupId: string): Promise<string[]> {
+    const response = await axios.get(`https://slack.com/api/usergroups.users.list`, {
+      params: {
+        usergroup: groupId
+      },
+      headers: AUTH_HEADERS,
+    });
+
+    if (response.status < 200 || response.status >= 300 || !response.data.ok) {
+      console.log('Failed to upload image: ' + JSON.stringify(response.data, null, 2));
+      throw response.data;
+    }
+
+    return response.data.users;
+  }
 }
 
 export const slackApi = new SlackApi();
