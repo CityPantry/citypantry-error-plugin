@@ -163,7 +163,7 @@ function createSlackBody(report: Report, slackId: string | null, issueKey: strin
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `*URL:* <${report.url}|https://citypantry.com/foo/bar?baasdaasda>`
+            text: `*URL:* <${report.url}|${report.url}>`
           }
         },
         {
@@ -219,7 +219,7 @@ function createJiraDescription(report: Report, screenshotUrl: string | null, dat
       Doc.p(Doc.text('Affected People: ', 'strong'), Doc.text(report.affectedPeople)),
       Doc.p(Doc.text('Number of Affected People: ', 'strong'), Doc.text(toHumanString(report.incidentSize))),
       Doc.p(Doc.text('Screenshot:', 'strong'), Doc.br, screenshotUrl ? Doc.link(screenshotUrl) : Doc.text('No Screenshot')),
-      Doc.p(Doc.text('Console data:', 'strong'), Doc.br, dataUrl ? Doc.link(dataUrl) : Doc.text(Buffer.from(report.consoleErrors || '').toString('base64'))),
+      Doc.p(Doc.text('Console data:', 'strong'), Doc.br, dataUrl ? Doc.link(dataUrl) : Doc.text(Buffer.from(report.consoleErrors || '<no data>').toString('base64'))),
       Doc.p(Doc.text('Reported By: ', 'strong'), Doc.text(report.name)),
     ]
   };
