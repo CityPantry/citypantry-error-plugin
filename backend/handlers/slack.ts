@@ -1,10 +1,17 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult, Callback } from 'aws-lambda';
 import axios from 'axios';
 import * as QueryString from 'querystring';
-import { config } from '../../config';
+import { config, Teams } from '../../config';
 import { jiraApi } from '../api/jira.api';
 import { slackApi } from '../api/slack.api';
-import { ActionIds, BlockUpdate, createAssignActions, createClosedBlocks, getAction } from '../services/slack-body';
+import {
+  ActionIds,
+  BlockUpdate,
+  createAssignActions,
+  createClosedBlocks,
+  createMovedToTeamBlocks,
+  getAction
+} from '../services/slack-body';
 
 export const main: APIGatewayProxyHandler = (event, _, callback) => {
   try {
@@ -53,6 +60,9 @@ async function run(body: any, callback: Callback<APIGatewayProxyResult>): Promis
 
   const resolveAction = getAction(body, ActionIds.RESOLVE_VERIFIED);
   const closeAction = getAction(body, ActionIds.RESOLVE_NOTABUG);
+  const assignTeamAction = getAction(body, ActionIds.ASSIGN_TEAM);
+
+  console.log(body.actions);
 
   let updateActions: BlockUpdate | null = null;
 
@@ -68,6 +78,14 @@ async function run(body: any, callback: Callback<APIGatewayProxyResult>): Promis
     await jiraApi.addComment(issueKey, `Issue closed from Slack by user ${body.user.name} (@${body.user.username})`);
 
     updateActions = createClosedBlocks(body.user.id);
+  } else if (assignTeamAction) {
+    const [issueKey, teamId] = assignTeamAction.selected_option.value.split('|');
+
+    const team = Teams.get(teamId);
+
+    console.log('Assigning issue to team', issueKey, team.name);
+
+    updateActions = createMovedToTeamBlocks(team.name, body.user.id)
   }
 
   if (updateActions) {

@@ -29,6 +29,7 @@ const foo: APIGatewayProxyHandler = async () => {
       },
       {
         type: 'section',
+        block_id: 'actions_prompt',
         text: {
           type: 'mrkdwn',
           text: 'Developer actions:'

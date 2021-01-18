@@ -4,7 +4,7 @@ export interface TeamConfig {
   slackChannel: string;
 }
 
-const teams: TeamConfig[] = [
+export const teams: TeamConfig[] = [
   {
     name: 'Supply',
     id: '10244',

@@ -1,20 +1,30 @@
 import { Report, toHumanString } from '@models';
-import { config } from '../../config';
+import { config, teams } from '../../config';
 import { BlockData, BlocksPostData } from '../api/slack.api';
 
 export enum ActionIds {
   RESOLVE_VERIFIED = 'resolve-verified',
   RESOLVE_NOTABUG = 'resolve-notabug',
+  ASSIGN_TEAM = 'assign-team',
 }
 
-export interface SlackResponseAction {
+export type SlackResponseAction = {
+  type: string; //'button',
   action_id: string; //'resolve-verified',
   block_id: string; //'gYcZ0',
-  text: unknown; //[Object],
-  value: string; //'verified',
-  style: string; //'primary',
-  type: string; //'button',
   action_ts: string; //'1610984294.153606'
+
+  // Button
+  text?: unknown; //[Object],
+  value?: string; //'verified',
+  style?: string; //'primary',
+
+  // Select
+  selected_option?: {
+    text: unknown;
+    value: string;
+  }; // { text: [Object], value: 'CPD-11684|10244' },
+  placeholder?: unknown; // { type: 'plain_text', text: 'Assign to a Dev Team', emoji: true },
 }
 
 export function getAction(slackResponseBody: any, actionId: ActionIds): SlackResponseAction | null {
@@ -120,7 +130,10 @@ export function createSlackBody(report: Report, slackId: string | null, issueKey
               }
             }
           ]
-        }
+        },
+        {
+          type: 'divider'
+        },
       ]
     },
     threadReply: [
@@ -150,7 +163,6 @@ function replace(oldId: string, ...newItems: BlockData[]): BlockUpdate {
   return (blocks) => {
     blocks = blocks.slice();
     const index = blocks.findIndex(({ block_id }) => block_id === oldId);
-
     blocks.splice(index, 1, ...newItems);
 
     return blocks;
@@ -167,15 +179,45 @@ function chain(...updates: BlockUpdate[]): BlockUpdate {
 }
 
 export function createAssignActions(issueKey: string, userId: string): BlockUpdate {
-  issueKey = issueKey + '';
-
-  return replace('actions', {
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `:syringe: Issue marked as *verified* by <@${userId}>`
-    }
-  });
+  return chain(
+    replace('actions_prompt', {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `:syringe: Issue marked as *verified* by <@${userId}>`
+      }
+    }),
+    replace('actions', {
+      type: 'section',
+      block_id: 'actions_prompt',
+      text: {
+        type: 'mrkdwn',
+        text: `Choose a team to assign:`
+      }
+    }, {
+      block_id: 'actions',
+      type: 'actions',
+      elements: [
+        {
+          type: 'static_select',
+          action_id: ActionIds.ASSIGN_TEAM,
+          placeholder: {
+            type: 'plain_text',
+            text: 'Assign to a Dev Team',
+            emoji: true
+          },
+          options: teams.map(({ name, id }) => ({
+            text: {
+              type: 'plain_text',
+              text: name,
+              emoji: true
+            },
+            value: `${issueKey}|${id}`,
+          })),
+        }
+      ]
+    })
+  );
 }
 
 export function createMovedToTeamBlocks(teamName: string, userId: string): BlockUpdate {
