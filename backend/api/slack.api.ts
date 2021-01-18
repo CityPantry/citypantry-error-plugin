@@ -87,6 +87,38 @@ export class SlackApi {
     };
   }
 
+  async postEphemeral(props: (TextPostData | BlocksPostData) & { user: string }): Promise<void> {
+    const { channel, username, attachments, user } = props;
+
+    const data: any = {
+      channel: channel || config.channel,
+      user,
+      username: username || config.username,
+      attachments
+    };
+
+    if (isTextPost(props)) {
+      data.text = props.text;
+    } else if (isBlocksPost(props)) {
+      data.blocks = props.blocks;
+    }
+
+    console.log('Posting to slack', JSON.stringify(data));
+
+    const response = await axios(`https://slack.com/api/chat.postEphemeral`, {
+      method: 'post',
+      data,
+      headers: AUTH_HEADERS,
+    });
+
+    if (response.status < 200 || response.status > 299 || !response.data.ok) {
+      console.log('Failed to post', response.status, response.data);
+      throw new Error('Unable to post to Slack');
+    }
+
+    console.log('Posted to Slack', response.status, response.data);
+  }
+
   async getPermalink(message: { channel: string, ts: string }): Promise<string> {
     const response = await axios.get(`https://slack.com/api/chat.getPermalink`, {
       params: {
