@@ -75,6 +75,19 @@ const serverlessConfiguration: AWS = {
         },
       ]
     },
+    slack: {
+      handler: 'backend/handlers/slack.main',
+      timeout: 30,
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'slack',
+            cors: true,
+          }
+        },
+      ]
+    },
     test: {
       handler: 'backend/handlers/test.main',
       timeout: 30,

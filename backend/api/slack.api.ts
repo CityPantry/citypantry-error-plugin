@@ -1,6 +1,8 @@
+import { APIGatewayProxyEventHeaders } from 'aws-lambda';
 import axios from 'axios';
 import * as FormData from 'form-data';
 import { config } from '../../config';
+import { createHmac } from 'crypto';
 
 const AUTH_HEADERS = {
   'Authorization': `Bearer ${config.slackBotToken}`
@@ -168,6 +170,28 @@ export class SlackApi {
     }
 
     return response.data.users;
+  }
+
+  checkValidity(body: string, headers: APIGatewayProxyEventHeaders): void {
+    // https://api.slack.com/authentication/verifying-requests-from-slack
+
+    const signature = headers['X-Slack-Signature'];
+    const version = signature.split('=')[0];
+    const timestamp = headers['X-Slack-Request-Timestamp'];
+    if (parseInt(timestamp, 10) * 1000 < new Date().getTime() - 5 * 60 * 1000) {
+      throw new Error('Request too old');
+    }
+
+    const hmac = createHmac("sha256", config.slackSigningSecret)
+      .update(`${version}:${timestamp}:${body}`)
+      .digest('hex');
+
+    const expectedSignature = `${version}=${hmac}`;
+
+    if (expectedSignature !== signature) {
+      console.log('Signature didn\'t match:', expectedSignature, signature);
+      throw new Error('Invalid signature');
+    }
   }
 }
 
