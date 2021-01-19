@@ -13,12 +13,12 @@ export const teams: TeamConfig[] = [
   {
     name: 'Demand',
     id: '10255',
-    slackChannel: '#slack-test',
+    slackChannel: 'C01F5F2NXPY', // #demand-team
   },
   {
     name: 'Fulfilment',
     id: '10218',
-    slackChannel: '#slack-test',
+    slackChannel: 'CFEMLTQ1X', // #dev-x
   },
 ]
 
