@@ -1,6 +1,7 @@
 import { config } from '../../config';
 import axios from 'axios';
-import { IncidentSize } from '@models';
+import { CustomFieldKeys, IncidentSize, Issue, IssueKey } from '@models';
+import { BugMetadata } from '../../models/bug-metadata.interface';
 
 export const API_PATH = config.jiraServer + '/rest/api/3';
 const auth = {
@@ -19,7 +20,7 @@ export interface Bug {
 }
 
 export class JiraApi {
-  public async createIssue(bug: Bug): Promise<string> {
+  public async createIssue(bug: Bug): Promise<IssueKey> {
 
     const priority = this.getPriority();
 
@@ -46,6 +47,13 @@ export class JiraApi {
     );
 
     return data.key;
+  }
+
+  public async getIssue(key: IssueKey): Promise<Issue> {
+    return (await axios.get<Issue>(
+      `${API_PATH}/issue/${key}`,
+      {auth},
+    )).data;
   }
 
   public async updateIssueDescription(issueKey: string, description: Bug['description']['content']): Promise<void> {
@@ -114,6 +122,40 @@ export class JiraApi {
       },
       {auth}
     );
+  }
+
+  public async updateMetadata(issueKey: IssueKey, metadataProps: Partial<BugMetadata>): Promise<Issue> {
+    const issue = await this.getIssue(issueKey);
+
+    let metadata = {};
+    try {
+      metadata = JSON.parse(issue.fields[CustomFieldKeys.BugMetadata] || '{}');
+    } catch (e) {
+      console.log('Failed to parse issue metadata:', e);
+    }
+
+    const newMetadata = { ...metadata, ...metadataProps };
+    const updatedFields = {
+      [CustomFieldKeys.BugMetadata]: JSON.stringify(newMetadata),
+    }
+
+    console.log('Updating metadata', updatedFields);
+
+    const response = await axios.put(
+      `${API_PATH}/issue/${issueKey}`,
+      { fields: updatedFields },
+      {auth},
+    );
+
+    console.log('Result:', response.status, response.data);
+
+    return {
+      ...issue,
+      fields: {
+        ...issue.fields,
+        ...updatedFields,
+      }
+    }
   }
 
   private getPriority(): string {

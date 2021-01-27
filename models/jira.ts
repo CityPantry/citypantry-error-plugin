@@ -4,6 +4,11 @@ export interface ApiObject {
 
 export type IssueKey = string;
 
+export enum CustomFieldKeys {
+  DevTeam = 'customfield_10922',
+  BugMetadata = 'customfield_10942',
+}
+
 export interface JiraCommentEvent {
   timestamp: number; // Milliseconds e.g. 1518873292317
   // https://developer.atlassian.com/server/jira/platform/webhooks/
@@ -269,7 +274,12 @@ interface DevTeamField extends ApiObject {
   id: string; // '10244'
 }
 
+export type JsonString = string;
+
 export interface CustomFields {
+  [CustomFieldKeys.DevTeam]: DevTeamField[] | null; // string representation in history is e.g. "Fulfilment,Supply"; native rep. = "[10218, 10244]" or null
+  [CustomFieldKeys.BugMetadata]: JsonString | null;
+
   customfield_10000: unknown | null;
   customfield_10001: unknown | null;
   customfield_10003: unknown | null;
@@ -297,7 +307,6 @@ export interface CustomFields {
   customfield_10700: unknown | null;
   customfield_10800: unknown | null;
   customfield_10910: unknown | null;
-  customfield_10922: DevTeamField[] | null; // Dev Team; string representation in history is e.g. "Fulfilment,Supply"; native rep. = "[10218, 10244]" or null
 }
 
 export function isApiObject(o): o is ApiObject {

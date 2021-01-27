@@ -14,4 +14,18 @@ export interface Report {
   currentUser: string;
   isMasquerading: boolean;
   consoleErrors: string;
+  isTest?: boolean;
+}
+
+export function getReportFromBody(body: any): Report {
+  if (typeof body === 'object') {
+    return body;
+  } else {
+    try {
+      return JSON.parse(body);
+    } catch (e) {
+      console.log('Failed to JSON parse:', body);
+      throw e;
+    }
+  }
 }

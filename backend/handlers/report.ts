@@ -1,4 +1,4 @@
-import { Report, toHumanString } from '@models';
+import { getReportFromBody, Report, toHumanString } from '@models';
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import * as uuid from 'uuid/v4';
 import { config } from '../../config';
@@ -8,18 +8,7 @@ import { slackApi } from '../api/slack.api';
 import { createSlackBody } from '../services/slack-body';
 
 export const main: APIGatewayProxyHandler = async (event) => {
-  const body: Report = (() => {
-    if (typeof event.body === 'object') {
-      return event.body;
-    } else {
-      try {
-        return JSON.parse(event.body);
-      } catch (e) {
-        console.log('Failed to JSON parse:', body);
-        throw e;
-      }
-    }
-  })();
+  const body = getReportFromBody(event.body);
 
   const response = await report(body);
   if (response) {
@@ -57,7 +46,9 @@ export const report = async (requestBody: Report): Promise<APIGatewayProxyResult
   }
   const slackId = await getSlackId(report.email);
 
-  const imageUrl = screenshot ? await awsApi.uploadImage(screenshot, imageName) : null;
+  const imageUrl = screenshot ?
+    await awsApi.uploadImage(screenshot, imageName) :
+    null;
   if (imageUrl) {
     console.log(`Uploaded image to ${imageUrl}`);
   }
@@ -74,12 +65,8 @@ export const report = async (requestBody: Report): Promise<APIGatewayProxyResult
 
     const { post: slackPost, threadReply } = createSlackBody(report, slackId, issueKey);
     console.log('Posting', slackPost);
-    const { permalink: slackUrl, ts: slackTs, channel: slackChannel } = await slackApi.post({ ...slackPost, channel: config.channel });
-    // console.log('Updating:', {
-    //   channel: slackChannel,
-    //   thread_ts: slackTs,
-    //   blocks: threadReply
-    // });
+    const channel = report.isTest ? '#slack-test' : config.channel;
+    const { permalink: slackUrl, ts: slackTs, channel: slackChannel } = await slackApi.post({ ...slackPost, channel });
     await slackApi.post({ // Thread reply
       channel: slackChannel,
       threadTs: slackTs,
@@ -105,6 +92,13 @@ export const report = async (requestBody: Report): Promise<APIGatewayProxyResult
 
     if (slackUrl) {
       await jiraApi.updateIssueDescription(issueKey, updateDescriptionWithSlackLink(bug, slackUrl));
+      await jiraApi.updateMetadata(issueKey, {
+        slackReport: {
+          channel: slackChannel,
+          messageTs: slackTs,
+          url: slackUrl,
+        }
+      });
     }
   } catch (error) {
     console.log('Upstream error', error);
