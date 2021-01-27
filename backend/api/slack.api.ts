@@ -3,6 +3,7 @@ import axios from 'axios';
 import * as FormData from 'form-data';
 import { config } from '../../config';
 import { createHmac } from 'crypto';
+import { SlackLink } from '../../models/slack-link.model';
 
 const AUTH_HEADERS = {
   'Authorization': `Bearer ${config.slackBotToken}`
@@ -36,15 +37,9 @@ export interface BlockData {
   [key: string]: any;
 }
 
-export interface MessageData {
-  ts: string;
-  channel: string;
-  permalink: string;
-}
-
 export class SlackApi {
 
-  async post(props: TextPostData | BlocksPostData): Promise<MessageData> {
+  async post(props: TextPostData | BlocksPostData): Promise<SlackLink> {
     const { channel, username, attachments } = props;
 
     const data: any = {

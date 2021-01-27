@@ -1,10 +1,6 @@
-export type SlackUrl = string;
+import { SlackLink } from './slack-link.model';
 
 export interface BugMetadata {
-  slackReport?: {
-    channel: string;
-    messageTs: string;
-    url: SlackUrl;
-  };
-  slackBugMovedLinks: SlackUrl[];
+  slackReport?: SlackLink;
+  slackBugMovedLinks: SlackLink[];
 }

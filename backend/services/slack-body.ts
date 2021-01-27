@@ -75,15 +75,8 @@ export function createSlackBody(report: Report, slackId: string | null, issueKey
           }
         },
         {
-          type: 'divider'
-        },
-        {
-          type: 'section',
-          block_id: 'actions_prompt',
-          text: {
-            type: 'mrkdwn',
-            text: 'Developer actions:'
-          }
+          type: 'divider',
+          block_id: 'post_content_divider',
         },
         {
           type: 'actions',
@@ -132,8 +125,18 @@ export function createSlackBody(report: Report, slackId: string | null, issueKey
           ]
         },
         {
-          type: 'divider'
+          type: 'divider',
+          block_id: 'post_actions_divider',
         },
+        // {
+        //   type: 'context',
+        //   elements: [
+        //     {
+        //       type: 'mrkdwn',
+        //       text: ':syringe: Issue marked as *verified* by <https://goog.ex|@paul>',
+        //     }
+        //   ]
+        // }
       ]
     },
     threadReply: [

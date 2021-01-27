@@ -1,9 +1,27 @@
+import { IncidentSize, Report } from '@models';
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import { slackApi } from '../api/slack.api';
-import { ActionIds } from '../services/slack-body';
+import { createSlackBody } from '../services/slack-body';
+
+const fakeReport: Report = {
+  time: '2020-01-01 10:00',
+  affectedPeople: 'Me',
+  currentUser: 'Current User',
+  consoleErrors: '',
+  incidentSize: IncidentSize.MEDIUM,
+  stepsToReproduce: '',
+  isMasquerading: true,
+  url: 'https://citypantry.com',
+  summary: 'Things have gone wrong',
+  description: 'Bacon ipsum dolor amet shoulder venison jerky tri-tip shank chuck.\n\nFatback flank ham ham hock salami ribeye shoulder bacon andouille pork chop.\nKielbasa drumstick boudin corned beef ham hock ground round frankfurter andouille short loin shank, chicken meatloaf ham venison.',
+  email: 'paul@citypantry.com',
+  name: 'Paul Lessing',
+  screenshot: null,
+  isTest: true,
+};
 
 export const main: APIGatewayProxyHandler = async (event) => {
-  const response = await foo(event, undefined, undefined);
+  const response = await test(event, undefined, undefined);
   if (response) {
     if (!response.headers) {
       response.headers = {};
@@ -13,75 +31,12 @@ export const main: APIGatewayProxyHandler = async (event) => {
   return response as APIGatewayProxyResult;
 }
 
-const foo: APIGatewayProxyHandler = async () => {
+const test: APIGatewayProxyHandler = async () => {
+  const { post } = createSlackBody(fakeReport, null, 'CPD-00000');
+
   await slackApi.post({
+    ...post,
     channel: '#slack-test',
-    blocks: [
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": "New bug reported"
-        }
-      },
-      {
-        "type": "divider"
-      },
-      {
-        type: 'section',
-        block_id: 'actions_prompt',
-        text: {
-          type: 'mrkdwn',
-          text: 'Developer actions:'
-        }
-      },
-      {
-        "type": "actions",
-        "block_id": "actions",
-        "elements": [
-          {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "text": "OK",
-              "emoji": true
-            },
-            "style": "primary",
-            "value": 'CPD-11684',
-            "action_id": ActionIds.RESOLVE_VERIFIED
-          },
-          {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "text": "Not OK",
-              "emoji": true
-            },
-            "style": "danger",
-            "value": 'CPD-11684',
-            "action_id": ActionIds.RESOLVE_NOTABUG,
-            "confirm": {
-              "title": {
-                "type": "plain_text",
-                "text": "Are you sure?"
-              },
-              "text": {
-                "type": "mrkdwn",
-                "text": "This will close the bug without resolution."
-              },
-              "confirm": {
-                "type": "plain_text",
-                "text": "Mark as Not A Bug"
-              },
-              "deny": {
-                "type": "plain_text",
-                "text": "Cancel"
-              }
-            }
-          }
-        ]
-      }
-    ]
   });
 
   return {

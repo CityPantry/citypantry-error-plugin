@@ -19,6 +19,10 @@ export interface Bug {
   };
 }
 
+export type UpdateProps<PropType> = {
+  [Key in keyof PropType]?: PropType[Key] | ((oldValue: PropType[Key]) => PropType[Key]);
+};
+
 export class JiraApi {
   public async createIssue(bug: Bug): Promise<IssueKey> {
 
@@ -124,7 +128,7 @@ export class JiraApi {
     );
   }
 
-  public async updateMetadata(issueKey: IssueKey, metadataProps: Partial<BugMetadata>): Promise<Issue> {
+  public async updateBugMetadata(issueKey: IssueKey, metadataProps: UpdateProps<BugMetadata>): Promise<Issue> {
     const issue = await this.getIssue(issueKey);
 
     let metadata = {};
@@ -134,10 +138,20 @@ export class JiraApi {
       console.log('Failed to parse issue metadata:', e);
     }
 
-    const newMetadata = { ...metadata, ...metadataProps };
+    const newMetadata = { ...metadata };
+
+    for (const prop of Object.keys(metadataProps)) {
+      let updatedProp = metadataProps[prop];
+      if (typeof updatedProp === 'function') {
+        newMetadata[prop] = updatedProp(metadata[prop]);
+      } else {
+        newMetadata[prop] = updatedProp;
+      }
+    }
+
     const updatedFields = {
       [CustomFieldKeys.BugMetadata]: JSON.stringify(newMetadata),
-    }
+    };
 
     console.log('Updating metadata', updatedFields);
 

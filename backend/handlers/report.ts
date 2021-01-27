@@ -92,11 +92,11 @@ export const report = async (requestBody: Report): Promise<APIGatewayProxyResult
 
     if (slackUrl) {
       await jiraApi.updateIssueDescription(issueKey, updateDescriptionWithSlackLink(bug, slackUrl));
-      await jiraApi.updateMetadata(issueKey, {
+      await jiraApi.updateBugMetadata(issueKey, {
         slackReport: {
+          permalink: slackUrl,
           channel: slackChannel,
-          messageTs: slackTs,
-          url: slackUrl,
+          ts: slackTs,
         }
       });
     }

@@ -1,6 +1,7 @@
 import { JiraIssueEvent } from '@models';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { config, TeamConfig, Teams } from '../../config';
+import { jiraApi } from '../api/jira.api';
 import { BlockData, slackApi } from '../api/slack.api';
 
 export const main: APIGatewayProxyHandler = async (apiEvent) => {
@@ -54,11 +55,14 @@ async function processEvent(event: JiraIssueEvent): Promise<void> {
     });
 
     try {
-      await slackApi.post({
+      const slackLink = await slackApi.post({
         blocks,
         channel: team.slackChannel,
         username: 'Bug Monitoring',
       });
+
+      await jiraApi.updateBugMetadata(issueKey, { slackBugMovedLinks: (links) => (links || []).concat(slackLink) })
+
     } catch (e) {
       console.log('ERROR', e);
     }
