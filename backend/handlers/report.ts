@@ -150,7 +150,13 @@ function createJiraDescription(report: Report, screenshotUrl: string | null, dat
       Doc.p(Doc.text('Affected People: ', 'strong'), Doc.text(report.affectedPeople)),
       Doc.p(Doc.text('Number of Affected People: ', 'strong'), Doc.text(toHumanString(report.incidentSize))),
       Doc.p(Doc.text('Screenshot:', 'strong'), Doc.br, screenshotUrl ? Doc.link(screenshotUrl) : Doc.text('No Screenshot')),
-      Doc.p(Doc.text('Console data:', 'strong'), Doc.br, dataUrl ? Doc.link(dataUrl) : Doc.text(Buffer.from(report.consoleErrors || '<no data>').toString('base64'))),
+      Doc.p(Doc.text('Console data:', 'strong'), Doc.br,
+        dataUrl ?
+          Doc.link(dataUrl) :
+          (report.consoleErrors ?
+            Doc.text('base64: ' + Buffer.from(report.consoleErrors).toString('base64')) :
+            '<no data>'
+          )),
       Doc.p(Doc.text('Reported By: ', 'strong'), Doc.text(report.name)),
     ]
   };

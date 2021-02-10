@@ -189,7 +189,7 @@ export namespace Document {
   export function p(...text: (string | object)[]): object {
     return {
       type: 'paragraph',
-      content: text.map((value) => typeof value === 'string' ? Document.text(value) : value),
+      content: text.filter(Boolean).map((value) => typeof value === 'string' ? Document.text(value) : value),
     };
   }
 

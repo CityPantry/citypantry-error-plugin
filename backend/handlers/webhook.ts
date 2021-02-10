@@ -1,4 +1,4 @@
-import { JiraIssueEvent } from '@models';
+import { CustomFieldKeys, JiraIssueEvent } from '@models';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { config, TeamConfig, Teams } from '../../config';
 import { jiraApi } from '../api/jira.api';
@@ -29,7 +29,7 @@ async function processEvent(event: JiraIssueEvent): Promise<void> {
     return;
   }
 
-  const previousValue = isCreateEvent ? null : event.changelog.items.find((item) => item.fieldId === 'customfield_10922').from as string | null;
+  const previousValue = isCreateEvent ? null : event.changelog.items.find((item) => item.fieldId === CustomFieldKeys.DevTeam).from as string | null;
   const previousTeams = previousValue ? findTeamsByChangelogValue(previousValue) : [];
 
   const newValue = event.issue.fields.customfield_10922;
