@@ -11,7 +11,13 @@
     ],
     "types": [
       "chrome",
-      "node"
+      "node",
+      "svelte",
+      "svelte/store",
+      "svelte/motion",
+      "svelte/transition",
+      "svelte/animate",
+      "svelte/easing"
     ],
     "jsx": "react",
     "skipLibCheck": true,

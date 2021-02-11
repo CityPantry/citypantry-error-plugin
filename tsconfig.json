@@ -8,12 +8,13 @@
     "removeComments": true,
     "sourceMap": true,
     "target": "ESNext",
-    "outDir": "lib"
+    "outDir": "lib",
+    "esModuleInterop": true
   },
   "include": [
     "handler.ts",
     "backend/**/*.ts",
-    "models/**/*.ts"
+    "models/**/*.ts",
   ],
   "exclude": [
     "node_modules/**/*",

@@ -65,8 +65,8 @@ body, html {
 
     width: 0vh;
     height: 0vh;
-    border: 2rem solid #fff200;
-    background: #fff200;
+    border: 2rem solid #ff8000;
+    background: #ff8000;
     animation: rotation 2s ease-in-out infinite;
 }
 
