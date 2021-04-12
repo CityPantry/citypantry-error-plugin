@@ -139,9 +139,6 @@ function createJiraDescription(report: Report, screenshotUrl: string | null, dat
     content: [
       Doc.p(Doc.text(report.description)),
       Doc.p(
-        Doc.text('Dev notes:', 'strong'), Doc.br,
-      ),
-      Doc.p(
         Doc.text('User: ', 'strong'), Doc.text((report.isMasquerading ? 'Masquerading as ' : '') + report.currentUser), Doc.br,
         Doc.text('URL: ', 'strong'), Doc.link(report.url), Doc.br,
         Doc.text('Time: ', 'strong'), Doc.text(report.time),
@@ -149,6 +146,9 @@ function createJiraDescription(report: Report, screenshotUrl: string | null, dat
       Doc.p(
         Doc.text('Steps to Reproduce:', 'strong'), Doc.br,
         Doc.text(report.stepsToReproduce)
+      ),
+      Doc.p(
+        Doc.text('Dev notes:', 'strong'), Doc.br, Doc.text('Insert details here', 'em'),
       ),
       Doc.p(Doc.text('Affected People: ', 'strong'), Doc.text(report.affectedPeople)),
       Doc.p(Doc.text('Number of Affected People: ', 'strong'), Doc.text(toHumanString(report.incidentSize))),
