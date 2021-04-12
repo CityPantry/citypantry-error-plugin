@@ -139,6 +139,9 @@ function createJiraDescription(report: Report, screenshotUrl: string | null, dat
     content: [
       Doc.p(Doc.text(report.description)),
       Doc.p(
+        Doc.text('Dev notes:', 'strong'), Doc.br,
+      ),
+      Doc.p(
         Doc.text('User: ', 'strong'), Doc.text((report.isMasquerading ? 'Masquerading as ' : '') + report.currentUser), Doc.br,
         Doc.text('URL: ', 'strong'), Doc.link(report.url), Doc.br,
         Doc.text('Time: ', 'strong'), Doc.text(report.time),
