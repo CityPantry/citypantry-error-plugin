@@ -20,7 +20,9 @@ interface FormState {
   affectedPeoplePlaceholder: string;
 }
 
-type PropertyNamesOfType<U, T> = { [K in keyof U]: U[K] extends T ? K : never }[keyof U];
+type PropertyNamesOfType<Interface extends object, PropertyType> = {
+  [K in keyof Interface]: Interface[K] extends PropertyType ? K : never
+}[keyof Interface];
 
 export class Form extends React.Component<FormProps, FormState> {
 

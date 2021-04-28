@@ -212,11 +212,7 @@ class BackgroundHandler {
     const server = domainMatch[3];
     const apiUrl = `${protocol}://api.${server}/users/me/profile`;
 
-    const [
-      userId,
-    ] = await Promise.all([
-      this.getCookie(host, 'userId'),
-    ]);
+    const userId = await this.getCookie(host, 'masqueradingAsUserId');
 
     console.log('Got userId?', userId);
 
