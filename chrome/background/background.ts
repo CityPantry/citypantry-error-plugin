@@ -210,7 +210,7 @@ class BackgroundHandler {
     const host = domainMatch[1];
     const protocol = domainMatch[2];
     const server = domainMatch[3];
-    const apiUrl = `${protocol}://api.${server}/users/me/profile`;
+    const apiUrl = `${protocol}://${server}/api/users/me/profile`;
 
     const userId = await this.getCookie(host, 'masqueradingAsUserId');
 
