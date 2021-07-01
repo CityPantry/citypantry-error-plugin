@@ -60,7 +60,7 @@ export class Form extends React.Component<FormProps, FormState> {
   handleStringChange(prop: PropertyNamesOfType<Report, string>) {
     return (event) => {
       this.updateForm({
-        [prop]: event.target.value
+        [prop as string]: event.target.value
       });
     }
   }
@@ -68,14 +68,14 @@ export class Form extends React.Component<FormProps, FormState> {
   handleBoolChange(prop: PropertyNamesOfType<Report, boolean>) {
     return (event) => {
       this.updateForm({
-        [prop]: !!event.target.checked
+        [prop as string]: !!event.target.checked
       });
     }
   }
 
   handleChoiceChange(prop: keyof Report, value: any) {
     return () => this.updateForm({
-      [prop]: value
+      [prop as string]: value
     });
   }
 
