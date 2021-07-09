@@ -153,7 +153,7 @@ class BackgroundHandler {
   }
 
   private isCityPantryUrl(url): boolean {
-    const cityPantryUrls = /^https?:\/\/([a-z0-9-]+\.)*(c8y\.tech|citypantry\.com|cptesting\.dev|cpstaging\.dev|citypantry-preview\.com)($|\/)/i;
+    const cityPantryUrls = /^https?:\/\/([a-z0-9-]+\.)*(business\.just-eat\.co\.uk|c8y\.tech|citypantry\.com|cptesting\.dev|cpstaging\.dev|citypantry-preview\.com)($|\/)/i;
 
     return !!url.match(cityPantryUrls);
   }

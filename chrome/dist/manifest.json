@@ -1,9 +1,9 @@
 {
-  "name": "City Pantry Error Reporting",
-  "short_name": "CP Error Reporting",
-  "version": "1.8.0",
+  "name": "Error Reporter for Just Eat For Business",
+  "short_name": "JEFB Error Reporter",
+  "version": "1.9.0",
   "manifest_version": 2,
-  "description": "Easily report errors on citypantry.com",
+  "description": "Easily report errors on business.just-eat.co.uk",
   "homepage_url": "https://slack.com/app_redirect?channel=C0KDSMAMV",
   "browser_action": {
     "default_title": "Report an Error",
@@ -17,6 +17,8 @@
   "content_scripts": [
     {
       "matches": [
+        "https://business.just-eat.co.uk/",
+        "https://business.just-eat.co.uk/*",
         "https://citypantry.com/",
         "https://citypantry.com/*",
         "https://*.citypantry.com/",

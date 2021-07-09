@@ -1,5 +1,5 @@
-# citypantry-error-extension
-Error Handling plugin for CityPantry.com
+# Bug Reporter Plugin
+Error Reporting plugin for Just Eat for Business
 
 ## Setup
 ```sh
@@ -34,5 +34,5 @@ This chrome extension consists of three files:
     It's a singleton that runs all the time in the background.
 2. `Popup`: contains the react frontend that appears in a popup when the extension icon is clicked.
     A new instance of it is created every time the popup is opened.
-3. `Content`: a script that injects itself to CityPantry website pages to pass specific data to the extension.
+3. `Content`: a script that injects itself to JEFB website pages to pass specific data to the extension.
     The data passed is needed by the extension but it cannot otherwise access (e.g. console data).

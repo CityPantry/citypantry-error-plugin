@@ -37,7 +37,7 @@ export function PopupBody({ state, takeSnapshot, submitReport, reset, openSlack,
           </button>
         </div>
         {!state.isCityPantryUrl ? <p class="status-text--red">
-          Looks like you're not on a citypantry.com page.<br/>
+          Looks like you're not on a Just Eat for Business page.<br/>
           Please be careful when creating a bug report to not share sensitive information via the URL or screenshot.
         </p> : null}
       </div>;
