@@ -73,7 +73,7 @@ async function run(body: any, callback: Callback<APIGatewayProxyResult>): Promis
     updateActions = createAssignActions(issueKey, body.user.id);
   } else if (closeAction) {
     const issueKey = closeAction.value;
-    await jiraApi.transitionIssue(issueKey, config.transitionIds.closed);
+    await jiraApi.transitionIssue(issueKey, config.transitionIds.done, config.resolutionIds.cannotReproduce);
     await jiraApi.addComment(issueKey, `Issue closed from Slack by user ${body.user.name} (@${body.user.username})`);
 
     updateActions = createClosedBlocks(body.user.id);

@@ -81,14 +81,22 @@ export class JiraApi {
     );
   }
 
-  public async transitionIssue(issueKey: string, transitionId: string): Promise<void> {
+  public async transitionIssue(issueKey: string, transitionId: string, resolutionId?: string): Promise<void> {
+    const data: any = {
+      transition: {
+        id: transitionId,
+      },
+    };
+    if (resolutionId) {
+      data.fields = {
+        resolution: {
+          id: resolutionId,
+        },
+      };
+    }
     await axios.post(
       `${API_PATH}/issue/${issueKey}/transitions`,
-      {
-        transition: {
-          id: transitionId
-        }
-      },
+      data,
       { auth }
     );
   }
