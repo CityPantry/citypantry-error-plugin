@@ -10,7 +10,10 @@ export const config = {
   projectKey: 'The project key is the prefix that your stories have e.g. ABC-123 has project key ABC',
   bugIssueName: 'Most likely "Bug" or similar.',
   transitionIds: {
-    closed: '31',
+    done: '301',
     verified: '221',
-  }
+  },
+  resolutionIds: {
+    cannotReproduce: '5',
+  },
 };
